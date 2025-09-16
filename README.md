@@ -1,10 +1,10 @@
 # AWAY - Sistema Patronato
 
-Sistema de gestão para patronatos desenvolvido em Angular 19.
+Sistema de gestão para patronatos criado com Angular 19.
 
 ## 📋 Sobre o Projeto
 
-O AWAY é um sistema web desenvolvido para auxiliar na gestão de patronatos, oferecendo funcionalidades para:
+O AWAY é um sistema web criado para auxiliar na gestão de patronatos, oferecendo funcionalidades para:
 
 - **Gestão de Assistidos**: Cadastro e controle de pessoas assistidas
 - **Gestão de Usuários**: Administração de usuários do sistema
@@ -13,14 +13,14 @@ O AWAY é um sistema web desenvolvido para auxiliar na gestão de patronatos, of
 - **Relatórios**: Geração de relatórios gerenciais
 - **Calendário**: Agendamento e controle de eventos
 
-## 🛠️ Tecnologias Utilizadas
+## 🛠️ Tecnologias Utilizadas na Criação
 
-- **Angular 19.2.0** - Framework principal
+- **Angular 19.2.0** - Framework principal usado na criação
 - **TypeScript 5.7.2** - Linguagem de programação
 - **SCSS** - Pré-processador CSS
 - **RxJS 7.8.0** - Programação reativa
 - **SweetAlert2** - Alertas e modais
-- **Angular CLI 19.2.16** - Ferramentas de desenvolvimento
+- **Angular CLI 19.2.16** - Ferramentas para criação e desenvolvimento
 
 ## 🚀 Como Executar o Projeto
 
@@ -138,7 +138,7 @@ Este projeto está licenciado sob a Licença Apache 2.0 - veja o arquivo [LICENS
 
 ## 📞 Contato
 
-Desenvolvido como Projeto Integrador de Extensão do Curso de Análise e Desenvolvimento de Sistemas & Engenharia de Software.
+Projeto criado como Projeto Integrador de Extensão do Curso de Análise e Desenvolvimento de Sistemas & Engenharia de Software.
 
 ---
 
