@@ -15,20 +15,12 @@
       <p>Lista completa de todos os assistidos cadastrados</p>
     </div>
 
-    <div class="relatorio-card" (click)="gerarRelatorio('agendamentos')">
+    <div class="relatorio-card" (click)="gerarRelatorio('comparecimentos')">
       <div class="relatorio-icon">
-        <i class="fas fa-calendar-alt"></i>
+        <i class="fas fa-calendar-check"></i>
       </div>
-      <h3>Relatório de Agendamentos</h3>
-      <p>Agendamentos por período e status</p>
-    </div>
-
-    <div class="relatorio-card" (click)="gerarRelatorio('visitas')">
-      <div class="relatorio-icon">
-        <i class="fas fa-home"></i>
-      </div>
-      <h3>Relatório de Visitas</h3>
-      <p>Visitas realizadas e pendentes</p>
+      <h3>Relatório de Comparecimentos</h3>
+      <p>Comparecimentos por período e status</p>
     </div>
 
     <div class="relatorio-card" (click)="gerarRelatorio('documentos')">
@@ -45,14 +37,6 @@
       </div>
       <h3>Relatório de Atividades</h3>
       <p>Atividades realizadas por assistido</p>
-    </div>
-
-    <div class="relatorio-card" (click)="gerarRelatorio('compliance')">
-      <div class="relatorio-icon">
-        <i class="fas fa-shield-alt"></i>
-      </div>
-      <h3>Relatório de Compliance</h3>
-      <p>Conformidade com as obrigações legais</p>
     </div>
   </div>
 </div>

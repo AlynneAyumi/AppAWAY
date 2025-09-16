@@ -30,5 +30,23 @@ export class RelatorioListComponent implements OnInit {
 
   gerarRelatorio(tipo: string): void {
     console.log('Gerando relatório:', tipo);
+    
+    // Simular geração de relatório
+    switch(tipo) {
+      case 'assistidos':
+        console.log('Gerando relatório de assistidos...');
+        break;
+      case 'comparecimentos':
+        console.log('Gerando relatório de comparecimentos...');
+        break;
+      case 'documentos':
+        console.log('Gerando relatório de documentos...');
+        break;
+      case 'atividades':
+        console.log('Gerando relatório de atividades...');
+        break;
+      default:
+        console.log('Tipo de relatório não reconhecido:', tipo);
+    }
   }
 }

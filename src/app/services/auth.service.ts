@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { tap, map } from 'rxjs/operators';
-import { LoginRequest, LoginResponse, Usuario } from '../models/usuario.model';
+import { LoginRequest, LoginResponse, Usuario, PerfilUsuario } from '../models/usuario.model';
 import { MapperService } from './mapper.service';
 
 @Injectable({
@@ -18,6 +18,35 @@ export class AuthService {
   }
 
   login(loginRequest: LoginRequest): Observable<LoginResponse> {
+    // Simulação temporária para demonstração - REMOVER quando backend estiver disponível
+    return new Observable(observer => {
+      setTimeout(() => {
+        const mockResponse: LoginResponse = {
+          token: 'mock-token-12345',
+          usuario: {
+            id: 1,
+            nome: 'Usuário Demo',
+            nomeUser: 'usuario.demo',
+            email: loginRequest.email,
+            perfil: 'ADMINISTRADOR' as PerfilUsuario,
+            ativo: true,
+            dataCriacao: new Date(),
+            dataUltimaAtualizacao: new Date()
+          },
+          expiresIn: 3600
+        };
+        
+        localStorage.setItem('token', mockResponse.token);
+        localStorage.setItem('user', JSON.stringify(mockResponse.usuario));
+        this.currentUserSubject.next(mockResponse.usuario);
+        
+        observer.next(mockResponse);
+        observer.complete();
+      }, 1000); // Simula delay de rede
+    });
+    
+    // Código original comentado - descomente quando backend estiver disponível
+    /*
     return this.http.post<any>(`${this.API_URL}/login`, loginRequest).pipe(
       map(backendResponse => {
         const usuario = this.mapper.mapUsuarioFromBackend(backendResponse.usuario);
@@ -33,6 +62,7 @@ export class AuthService {
         this.currentUserSubject.next(response.usuario);
       })
     );
+    */
   }
 
   logout(): void {

@@ -33,6 +33,19 @@ export class DashboardComponent implements OnInit {
   carregarEstatisticas(): void {
     this.loading = true;
 
+    // Dados mockados para demonstração - REMOVER quando backend estiver disponível
+    setTimeout(() => {
+      this.stats = {
+        totalAssistidos: 156,
+        assistidosAtivos: 142,
+        comparecimentosHoje: 8,
+        comparecimentosPendentes: 23
+      };
+      this.loading = false;
+    }, 1500);
+
+    // Código original comentado - descomente quando backend estiver disponível
+    /*
     // Carregar estatísticas de assistidos
     this.assistidoService.listar({ page: 0, size: 1 }).subscribe({
       next: (response) => {
@@ -90,6 +103,7 @@ export class DashboardComponent implements OnInit {
         this.verificarCarregamentoCompleto();
       }
     });
+    */
   }
 
   private verificarCarregamentoCompleto(): void {

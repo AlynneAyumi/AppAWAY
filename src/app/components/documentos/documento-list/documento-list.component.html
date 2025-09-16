@@ -72,7 +72,7 @@
                     <strong>Vencimento:</strong> {{ documento.dataVencimento | date:'dd/MM/yyyy' }}
                   </span>
                 }
-                @if (documento.assistido) {
+                @if (documento.assistido?.pessoa) {
                   <span class="detail-item">
                     <strong>Assistido:</strong> {{ documento.assistido?.pessoa?.nome }} {{ documento.assistido?.pessoa?.segundoNome }}
                   </span>

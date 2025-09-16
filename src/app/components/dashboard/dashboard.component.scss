@@ -100,6 +100,14 @@
     &.visits {
       background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
     }
+
+    &.comparecimentos {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+
+    &.pendentes {
+      background: linear-gradient(135deg, #ffa726 0%, #ff7043 100%);
+    }
   }
 
   .stat-content {
