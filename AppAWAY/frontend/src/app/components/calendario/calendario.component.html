@@ -1,0 +1,159 @@
+<div class="calendario-container">
+  <div class="calendario-header">
+    <h1>Calendário de Comparecimentos</h1>
+    <p>Visualize e gerencie os comparecimentos por mês</p>
+  </div>
+
+  <!-- Controles do calendário -->
+  <div class="calendario-controls">
+    <div class="mes-navegacao">
+      <button class="btn btn-outline-primary" (click)="mesAnterior()">
+        <i class="fas fa-chevron-left"></i> Mês Anterior
+      </button>
+      <h2 class="mes-atual">{{ getNomeMes() }} {{ anoAtual }}</h2>
+      <button class="btn btn-outline-primary" (click)="mesProximo()">
+        Próximo Mês <i class="fas fa-chevron-right"></i>
+      </button>
+    </div>
+    <button class="btn btn-primary" (click)="irParaHoje()">
+      <i class="fas fa-calendar-day"></i> Hoje
+    </button>
+  </div>
+
+  <!-- Estatísticas do mês -->
+  <div class="estatisticas-mes">
+    <div class="stat-card">
+      <div class="stat-icon total">
+        <i class="fas fa-calendar-check"></i>
+      </div>
+      <div class="stat-content">
+        <h3>{{ getTotalComparecimentos() }}</h3>
+        <p>Total de Comparecimentos</p>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon compareceu">
+        <i class="fas fa-check-circle"></i>
+      </div>
+      <div class="stat-content">
+        <h3>{{ getTotalComparecidos() }}</h3>
+        <p>Compareceram</p>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon falta">
+        <i class="fas fa-times-circle"></i>
+      </div>
+      <div class="stat-content">
+        <h3>{{ getTotalFaltas() }}</h3>
+        <p>Faltaram</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Calendário -->
+  @if (loading) {
+    <div class="loading-container">
+      <div class="spinner"></div>
+      <p>Carregando calendário...</p>
+    </div>
+  } @else {
+    <div class="calendario-grid">
+      <!-- Cabeçalho dos dias da semana -->
+      <div class="dias-semana">
+        @for (dia of diasSemana; track dia) {
+          <div class="dia-semana">{{ dia }}</div>
+        }
+      </div>
+      
+      <!-- Dias do calendário -->
+      <div class="dias-calendario">
+        @for (dia of diasCalendario; track dia.data) {
+          <div class="dia-cell" 
+               [class.outside-month]="!dia.isCurrentMonth"
+               [class.today]="dia.isToday">
+            <div class="dia-numero">{{ dia.numero }}</div>
+            
+            @if (dia.comparecimentos.length > 0) {
+              <div class="comparecimentos-dia">
+                @for (comparecimento of dia.comparecimentos; track comparecimento.idComparecimento) {
+                  <div class="comparecimento-item" 
+                       [class]="getStatusClass(comparecimento)"
+                       (click)="abrirDetalhes(comparecimento)">
+                    <div class="comparecimento-info">
+                      <span class="assistido-nome">
+                        {{ comparecimento.assistido?.pessoa?.nome }} {{ comparecimento.assistido?.pessoa?.segundoNome }}
+                      </span>
+                      <span class="status-text">{{ getStatusText(comparecimento) }}</span>
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>
+
+<!-- Modal de detalhes do comparecimento -->
+<div class="modal-overlay" *ngIf="comparecimentoSelecionado" (click)="fecharDetalhes()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Detalhes do Comparecimento</h3>
+      <button class="btn-close" (click)="fecharDetalhes()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      @if (comparecimentoSelecionado) {
+        <div class="detalhes-comparecimento">
+          <div class="info-row">
+            <strong>Assistido:</strong>
+            <span>{{ comparecimentoSelecionado.assistido?.pessoa?.nome }} {{ comparecimentoSelecionado.assistido?.pessoa?.segundoNome }}</span>
+          </div>
+          <div class="info-row">
+            <strong>CPF:</strong>
+            <span>{{ comparecimentoSelecionado.assistido?.pessoa?.cpf }}</span>
+          </div>
+          <div class="info-row">
+            <strong>Processo:</strong>
+            <span>{{ comparecimentoSelecionado.assistido?.numProcesso }}</span>
+          </div>
+          <div class="info-row">
+            <strong>Data:</strong>
+            <span>{{ comparecimentoSelecionado.data | date:'dd/MM/yyyy' }}</span>
+          </div>
+          <div class="info-row">
+            <strong>Status:</strong>
+            <span [class]="getStatusClass(comparecimentoSelecionado)">
+              {{ getStatusText(comparecimentoSelecionado) }}
+            </span>
+          </div>
+          @if (comparecimentoSelecionado.observacoes) {
+            <div class="info-row">
+              <strong>Observações:</strong>
+              <span>{{ comparecimentoSelecionado.observacoes }}</span>
+            </div>
+          }
+        </div>
+        
+        <div class="modal-actions">
+          @if (!comparecimentoSelecionado.flagComparecimento) {
+            <button class="btn btn-success" (click)="confirmarComparecimento(comparecimentoSelecionado)">
+              <i class="fas fa-check"></i> Confirmar Comparecimento
+            </button>
+            <button class="btn btn-danger" (click)="registrarFalta(comparecimentoSelecionado)">
+              <i class="fas fa-times"></i> Registrar Falta
+            </button>
+          } @else {
+            <span class="text-success">
+              <i class="fas fa-check-circle"></i> Comparecimento já confirmado
+            </span>
+          }
+        </div>
+      }
+    </div>
+  </div>
+</div>

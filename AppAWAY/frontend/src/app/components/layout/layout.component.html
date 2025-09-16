@@ -1,0 +1,107 @@
+<div class="layout-container">
+  <!-- Sidebar -->
+  <aside class="sidebar" [class.sidebar-collapsed]="!sidebarOpen">
+    <div class="sidebar-header">
+      <div class="logo">
+        <div class="logo-icon">
+          <i class="fas fa-shield-alt"></i>
+        </div>
+        @if (sidebarOpen) {
+          <div class="logo-text">
+            <h1>Patronato</h1>
+            <p>Sistema de Gestão</p>
+          </div>
+        }
+      </div>
+      <button class="sidebar-toggle" (click)="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+      </button>
+    </div>
+
+    <nav class="sidebar-nav">
+      <ul class="nav-list">
+        <li class="nav-item">
+          <a routerLink="/dashboard" routerLinkActive="active" class="nav-link">
+            <i class="fas fa-chart-bar"></i>
+            @if (sidebarOpen) {
+              <span>Dashboard</span>
+            }
+          </a>
+        </li>
+        <li class="nav-item">
+          <a routerLink="/assistidos" routerLinkActive="active" class="nav-link">
+            <i class="fas fa-users"></i>
+            @if (sidebarOpen) {
+              <span>Assistidos</span>
+            }
+          </a>
+        </li>
+        <li class="nav-item">
+          <a routerLink="/comparecimentos" routerLinkActive="active" class="nav-link">
+            <i class="fas fa-calendar-check"></i>
+            @if (sidebarOpen) {
+              <span>Comparecimentos</span>
+            }
+          </a>
+        </li>
+        <li class="nav-item">
+          <a routerLink="/calendario" routerLinkActive="active" class="nav-link">
+            <i class="fas fa-calendar-alt"></i>
+            @if (sidebarOpen) {
+              <span>Calendário</span>
+            }
+          </a>
+        </li>
+        <li class="nav-item">
+          <a routerLink="/documentos" routerLinkActive="active" class="nav-link">
+            <i class="fas fa-file-alt"></i>
+            @if (sidebarOpen) {
+              <span>Documentos</span>
+            }
+          </a>
+        </li>
+        <li class="nav-item">
+          <a routerLink="/relatorios" routerLinkActive="active" class="nav-link">
+            <i class="fas fa-chart-line"></i>
+            @if (sidebarOpen) {
+              <span>Relatórios</span>
+            }
+          </a>
+        </li>
+        <li class="nav-item">
+          <a routerLink="/usuarios" routerLinkActive="active" class="nav-link">
+            <i class="fas fa-user-shield"></i>
+            @if (sidebarOpen) {
+              <span>Usuários</span>
+            }
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-info">
+        <div class="user-avatar">
+          <i class="fas fa-user"></i>
+        </div>
+        @if (sidebarOpen) {
+          <div class="user-details">
+            <span class="user-name">{{ currentUser?.nome || 'Usuário' }}</span>
+            <span class="user-role">{{ currentUser?.perfil || 'Admin' }}</span>
+          </div>
+        }
+      </div>
+      <button class="logout-btn" (click)="logout()" title="Sair">
+        <i class="fas fa-sign-out-alt"></i>
+        @if (sidebarOpen) {
+          <span>Sair</span>
+        }
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content" [class.main-content-expanded]="!sidebarOpen">
+    <router-outlet></router-outlet>
+  </main>
+</div>

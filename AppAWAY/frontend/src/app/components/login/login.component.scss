@@ -1,0 +1,159 @@
+.login-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px;
+}
+
+.login-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  padding: 40px;
+  width: 100%;
+  max-width: 400px;
+  animation: slideUp 0.6s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.logo {
+  .logo-icon {
+    width: 60px;
+    height: 60px;
+    background: #007bff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 15px;
+    
+    i {
+      color: white;
+      font-size: 24px;
+    }
+  }
+
+  h1 {
+    color: #333;
+    font-size: 28px;
+    font-weight: 700;
+    margin: 0 0 5px 0;
+  }
+
+  p {
+    color: #666;
+    font-size: 14px;
+    margin: 0;
+  }
+}
+
+.login-form {
+  .form-group {
+    margin-bottom: 20px;
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: #333;
+      font-weight: 500;
+      font-size: 14px;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid #e1e5e9;
+      border-radius: 8px;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      box-sizing: border-box;
+
+      &:focus {
+        outline: none;
+        border-color: #007bff;
+        box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+      }
+
+      &.is-invalid {
+        border-color: #dc3545;
+      }
+
+      &::placeholder {
+        color: #adb5bd;
+      }
+    }
+
+    .invalid-feedback {
+      color: #dc3545;
+      font-size: 12px;
+      margin-top: 5px;
+      display: block;
+    }
+  }
+
+  .btn-login {
+    width: 100%;
+    padding: 12px;
+    background: #007bff;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    &:hover:not(:disabled) {
+      background: #0056b3;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+    }
+
+    &:disabled {
+      background: #6c757d;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    i {
+      font-size: 14px;
+    }
+  }
+}
+
+// Responsividade
+@media (max-width: 480px) {
+  .login-container {
+    padding: 10px;
+  }
+
+  .login-card {
+    padding: 30px 20px;
+  }
+
+  .logo h1 {
+    font-size: 24px;
+  }
+}

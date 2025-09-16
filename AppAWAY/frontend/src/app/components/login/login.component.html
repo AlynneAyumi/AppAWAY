@@ -1,0 +1,73 @@
+<div class="login-container">
+  <div class="login-card">
+    <div class="login-header">
+      <div class="logo">
+        <div class="logo-icon">
+          <i class="fas fa-shield-alt"></i>
+        </div>
+        <h1>Patronato</h1>
+        <p>Sistema de Gestão</p>
+      </div>
+    </div>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+      <div class="form-group">
+        <label for="email">E-mail</label>
+        <input
+          type="email"
+          id="email"
+          formControlName="email"
+          class="form-control"
+          placeholder="Digite seu e-mail"
+          [class.is-invalid]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
+        />
+        @if (loginForm.get('email')?.invalid && loginForm.get('email')?.touched) {
+          <div class="invalid-feedback">
+            @if (loginForm.get('email')?.errors?.['required']) {
+              E-mail é obrigatório
+            }
+            @if (loginForm.get('email')?.errors?.['email']) {
+              E-mail inválido
+            }
+          </div>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="senha">Senha</label>
+        <input
+          type="password"
+          id="senha"
+          formControlName="senha"
+          class="form-control"
+          placeholder="Digite sua senha"
+          [class.is-invalid]="loginForm.get('senha')?.invalid && loginForm.get('senha')?.touched"
+        />
+        @if (loginForm.get('senha')?.invalid && loginForm.get('senha')?.touched) {
+          <div class="invalid-feedback">
+            @if (loginForm.get('senha')?.errors?.['required']) {
+              Senha é obrigatória
+            }
+            @if (loginForm.get('senha')?.errors?.['minlength']) {
+              Senha deve ter pelo menos 6 caracteres
+            }
+          </div>
+        }
+      </div>
+
+      <button
+        type="submit"
+        class="btn btn-primary btn-login"
+        [disabled]="loginForm.invalid || loading"
+      >
+        @if (loading) {
+          <i class="fas fa-spinner fa-spin"></i>
+          Entrando...
+        } @else {
+          <i class="fas fa-sign-in-alt"></i>
+          Entrar
+        }
+      </button>
+    </form>
+  </div>
+</div>

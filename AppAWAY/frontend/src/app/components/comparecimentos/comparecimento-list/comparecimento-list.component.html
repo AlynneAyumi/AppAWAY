@@ -1,0 +1,165 @@
+<div class="comparecimento-list-container">
+  <div class="page-header">
+    <h1>Controle de Comparecimentos</h1>
+    <p>Gerencie os comparecimentos dos assistidos</p>
+  </div>
+
+  <!-- Filtros -->
+  <div class="filters-section">
+    <div class="filters-card">
+      <h3>Filtros</h3>
+      <div class="filters-grid">
+        <div class="filter-group">
+          <label for="dataInicio">Data Início:</label>
+          <input 
+            type="date" 
+            id="dataInicio" 
+            [(ngModel)]="filtro.dataInicio" 
+            class="form-control"
+          >
+        </div>
+        <div class="filter-group">
+          <label for="dataFim">Data Fim:</label>
+          <input 
+            type="date" 
+            id="dataFim" 
+            [(ngModel)]="filtro.dataFim" 
+            class="form-control"
+          >
+        </div>
+        <div class="filter-group">
+          <label for="status">Status:</label>
+          <select [(ngModel)]="filtro.status" class="status-select">
+            <option value="">Todos</option>
+            <option *ngFor="let status of statusOptions" [value]="status">
+              {{ getStatusText(status) }}
+            </option>
+          </select>
+        </div>
+        <div class="filter-actions">
+          <button class="btn btn-primary" (click)="pesquisar()">
+            <i class="fas fa-search"></i> Pesquisar
+          </button>
+          <button class="btn btn-outline-secondary" (click)="limparFiltros()">
+            <i class="fas fa-times"></i> Limpar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lista de Comparecimentos -->
+  <div class="content-section">
+    @if (loading) {
+      <div class="loading-container">
+        <div class="spinner"></div>
+        <p>Carregando comparecimentos...</p>
+      </div>
+    } @else {
+      <div class="comparecimentos-grid">
+        @for (comparecimento of comparecimentos; track comparecimento.idComparecimento) {
+          <div class="comparecimento-card">
+            <div class="card-header">
+              <div class="assistido-info">
+                <h3 class="assistido-name">
+                  {{ comparecimento.assistido?.pessoa?.nome }} {{ comparecimento.assistido?.pessoa?.segundoNome }}
+                </h3>
+                <p class="assistido-details">
+                  <strong>CPF:</strong> {{ comparecimento.assistido?.pessoa?.cpf }}
+                </p>
+              </div>
+              <div class="status-badge" [class]="getStatusClass(comparecimento.flagComparecimento ? EnumSituacao.COMPARECEU : EnumSituacao.PENDENTE)">
+                {{ getStatusText(comparecimento.flagComparecimento ? EnumSituacao.COMPARECEU : EnumSituacao.PENDENTE) }}
+              </div>
+            </div>
+            
+            <div class="card-content">
+              <div class="info-row">
+                <strong>Data:</strong> {{ comparecimento.data | date:'dd/MM/yyyy' }}
+              </div>
+              <div class="info-row">
+                <strong>Processo:</strong> {{ comparecimento.assistido?.numProcesso }}
+              </div>
+              @if (comparecimento.observacoes) {
+                <div class="info-row">
+                  <strong>Observações:</strong> {{ comparecimento.observacoes }}
+                </div>
+              }
+            </div>
+            
+            <div class="card-actions">
+              @if (!comparecimento.flagComparecimento) {
+                <button 
+                  class="btn btn-success btn-sm" 
+                  (click)="confirmarComparecimento(comparecimento)"
+                  title="Confirmar Comparecimento"
+                >
+                  <i class="fas fa-check"></i> Confirmar
+                </button>
+                <button 
+                  class="btn btn-danger btn-sm" 
+                  (click)="registrarFalta(comparecimento)"
+                  title="Registrar Falta"
+                >
+                  <i class="fas fa-times"></i> Falta
+                </button>
+              } @else {
+                <span class="text-success">
+                  <i class="fas fa-check-circle"></i> Comparecimento confirmado
+                </span>
+              }
+            </div>
+          </div>
+        }
+        
+        @if (comparecimentos.length === 0) {
+          <div class="empty-state">
+            <i class="fas fa-calendar-times"></i>
+            <h3>Nenhum comparecimento encontrado</h3>
+            <p>Não há comparecimentos para os filtros selecionados.</p>
+          </div>
+        }
+      </div>
+    }
+  </div>
+
+  <!-- Paginação -->
+  @if (totalPages > 1) {
+    <div class="pagination-section">
+      <nav class="pagination-nav">
+        <button 
+          class="btn btn-outline-primary" 
+          [disabled]="currentPage === 0"
+          (click)="alterarPagina(currentPage - 1)"
+        >
+          <i class="fas fa-chevron-left"></i> Anterior
+        </button>
+        
+        <div class="pagination-numbers">
+          @for (pagina of getPaginas(); track pagina) {
+            <button 
+              class="btn pagination-btn"
+              [class.active]="pagina === currentPage"
+              (click)="alterarPagina(pagina)"
+            >
+              {{ pagina + 1 }}
+            </button>
+          }
+        </div>
+        
+        <button 
+          class="btn btn-outline-primary" 
+          [disabled]="currentPage === totalPages - 1"
+          (click)="alterarPagina(currentPage + 1)"
+        >
+          Próxima <i class="fas fa-chevron-right"></i>
+        </button>
+      </nav>
+      
+      <div class="pagination-info">
+        Página {{ currentPage + 1 }} de {{ totalPages }} 
+        ({{ totalElements }} comparecimentos)
+      </div>
+    </div>
+  }
+</div>

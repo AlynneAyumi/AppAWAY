@@ -1,0 +1,136 @@
+<div class="assistidos-container">
+  <div class="page-header">
+    <div class="header-content">
+      <h1>Assistidos</h1>
+      <p>Gerencie o cadastro e acompanhamento dos assistidos</p>
+    </div>
+    <button class="btn btn-primary btn-new">
+      <i class="fas fa-plus"></i>
+      Novo Cadastro
+    </button>
+  </div>
+
+  <div class="filters-section">
+    <div class="search-container">
+      <div class="search-input">
+        <i class="fas fa-search"></i>
+        <input
+          type="text"
+          [(ngModel)]="filtro.nome"
+          placeholder="Buscar por nome, CPF ou número do processo..."
+          (keyup.enter)="pesquisar()"
+        />
+      </div>
+      <select [(ngModel)]="filtro.status" class="status-select">
+        <option value="">Todos os Status</option>
+        @for (status of statusOptions; track status) {
+          <option [value]="status">{{ getStatusText(status) }}</option>
+        }
+      </select>
+      <button class="btn btn-outline-primary" (click)="pesquisar()">
+        <i class="fas fa-search"></i>
+        Buscar
+      </button>
+      <button class="btn btn-outline-secondary" (click)="limparFiltros()">
+        <i class="fas fa-times"></i>
+        Limpar
+      </button>
+    </div>
+  </div>
+
+  @if (loading) {
+    <div class="loading-container">
+      <div class="spinner"></div>
+      <p>Carregando assistidos...</p>
+    </div>
+  } @else {
+    <div class="assistidos-list">
+      @if (assistidos.length === 0) {
+        <div class="empty-state">
+          <i class="fas fa-users"></i>
+          <h3>Nenhum assistido encontrado</h3>
+          <p>Não há assistidos cadastrados ou que correspondam aos filtros aplicados.</p>
+        </div>
+      } @else {
+        @for (assistido of assistidos; track assistido.idAssistido) {
+          <div class="assistido-card">
+            <div class="assistido-avatar">
+              <i class="fas fa-user"></i>
+            </div>
+            
+            <div class="assistido-info">
+              <h3 class="assistido-name">{{ assistido.pessoa?.nome }} {{ assistido.pessoa?.segundoNome }}</h3>
+              <div class="assistido-details">
+                <span class="detail-item">
+                  <strong>CPF:</strong> {{ assistido.pessoa?.cpf }}
+                </span>
+                <span class="detail-item">
+                  <strong>Processo:</strong> {{ assistido.numProcesso }}
+                </span>
+                <span class="detail-item">
+                  <strong>Pena Alternativa</strong>
+                </span>
+              </div>
+            </div>
+
+            <div class="assistido-status">
+              <span class="status-badge status-ativo">
+                Ativo
+              </span>
+            </div>
+
+            <div class="assistido-actions">
+              <button class="btn-action btn-view" title="Visualizar">
+                <i class="fas fa-eye"></i>
+              </button>
+              <button class="btn-action btn-edit" title="Editar">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button 
+                class="btn-action btn-delete" 
+                title="Excluir"
+                (click)="excluirAssistido(assistido)"
+              >
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          </div>
+        }
+      }
+    </div>
+
+    @if (totalPages > 1) {
+      <div class="pagination">
+        <button 
+          class="btn-pagination" 
+          [disabled]="currentPage === 0"
+          (click)="alterarPagina(currentPage - 1)"
+        >
+          <i class="fas fa-chevron-left"></i>
+          Anterior
+        </button>
+
+        <div class="pagination-numbers">
+          @for (pagina of getPaginas(); track pagina) {
+            <button 
+              class="btn-pagination-number"
+              [class.active]="pagina === currentPage"
+              (click)="alterarPagina(pagina)"
+            >
+              {{ pagina + 1 }}
+            </button>
+          }
+        </div>
+
+        <button 
+          class="btn-pagination" 
+          [disabled]="currentPage === totalPages - 1"
+          (click)="alterarPagina(currentPage + 1)"
+        >
+          Próxima
+          <i class="fas fa-chevron-right"></i>
+        </button>
+      </div>
+    }
+  }
+</div>

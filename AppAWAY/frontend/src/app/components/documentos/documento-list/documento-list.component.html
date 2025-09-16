@@ -1,0 +1,108 @@
+<div class="documentos-container">
+  <div class="page-header">
+    <div class="header-content">
+      <h1>Documentos</h1>
+      <p>Gerencie os documentos dos assistidos</p>
+    </div>
+    <button class="btn btn-primary btn-new">
+      <i class="fas fa-plus"></i>
+      Novo Documento
+    </button>
+  </div>
+
+  <div class="filters-section">
+    <div class="search-container">
+      <div class="search-input">
+        <i class="fas fa-search"></i>
+        <input
+          type="text"
+          [(ngModel)]="filtro.assistidoId"
+          placeholder="Buscar por ID do assistido..."
+          (keyup.enter)="pesquisar()"
+        />
+      </div>
+      <select [(ngModel)]="filtro.tipo" class="status-select">
+        <option value="">Todos os Tipos</option>
+        @for (tipo of tipoOptions; track tipo) {
+          <option [value]="tipo">{{ getTipoText(tipo) }}</option>
+        }
+      </select>
+      <button class="btn btn-outline-primary" (click)="pesquisar()">
+        <i class="fas fa-search"></i>
+        Buscar
+      </button>
+      <button class="btn btn-outline-secondary" (click)="limparFiltros()">
+        <i class="fas fa-times"></i>
+        Limpar
+      </button>
+    </div>
+  </div>
+
+  @if (loading) {
+    <div class="loading-container">
+      <div class="spinner"></div>
+      <p>Carregando documentos...</p>
+    </div>
+  } @else {
+    <div class="documentos-list">
+      @if (documentos.length === 0) {
+        <div class="empty-state">
+          <i class="fas fa-file-alt"></i>
+          <h3>Nenhum documento encontrado</h3>
+          <p>Não há documentos cadastrados ou que correspondam aos filtros aplicados.</p>
+        </div>
+      } @else {
+        @for (documento of documentos; track documento.id) {
+          <div class="documento-card">
+            <div class="documento-icon">
+              <i class="fas fa-file-alt"></i>
+            </div>
+            
+            <div class="documento-info">
+              <h3 class="documento-title">{{ documento.nome }}</h3>
+              <div class="documento-details">
+                <span class="detail-item">
+                  <strong>Tipo:</strong> {{ getTipoText(documento.tipo) }}
+                </span>
+                <span class="detail-item">
+                  <strong>Upload:</strong> {{ documento.dataUpload | date:'dd/MM/yyyy' }}
+                </span>
+                @if (documento.dataVencimento) {
+                  <span class="detail-item">
+                    <strong>Vencimento:</strong> {{ documento.dataVencimento | date:'dd/MM/yyyy' }}
+                  </span>
+                }
+                @if (documento.assistido) {
+                  <span class="detail-item">
+                    <strong>Assistido:</strong> {{ documento.assistido?.pessoa?.nome }} {{ documento.assistido?.pessoa?.segundoNome }}
+                  </span>
+                }
+              </div>
+            </div>
+
+            <div class="documento-status">
+              <span class="status-badge" [class.active]="documento.ativo">
+                {{ documento.ativo ? 'Ativo' : 'Inativo' }}
+              </span>
+            </div>
+
+            <div class="documento-actions">
+              <button class="btn-action btn-view" title="Visualizar">
+                <i class="fas fa-eye"></i>
+              </button>
+              <button class="btn-action btn-download" title="Download">
+                <i class="fas fa-download"></i>
+              </button>
+              <button class="btn-action btn-edit" title="Editar">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="btn-action btn-delete" title="Excluir">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          </div>
+        }
+      }
+    </div>
+  }
+</div>

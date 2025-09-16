@@ -1,0 +1,58 @@
+<div class="relatorios-container">
+  <div class="page-header">
+    <div class="header-content">
+      <h1>Relatórios</h1>
+      <p>Gere relatórios e análises do sistema</p>
+    </div>
+  </div>
+
+  <div class="relatorios-grid">
+    <div class="relatorio-card" (click)="gerarRelatorio('assistidos')">
+      <div class="relatorio-icon">
+        <i class="fas fa-users"></i>
+      </div>
+      <h3>Relatório de Assistidos</h3>
+      <p>Lista completa de todos os assistidos cadastrados</p>
+    </div>
+
+    <div class="relatorio-card" (click)="gerarRelatorio('agendamentos')">
+      <div class="relatorio-icon">
+        <i class="fas fa-calendar-alt"></i>
+      </div>
+      <h3>Relatório de Agendamentos</h3>
+      <p>Agendamentos por período e status</p>
+    </div>
+
+    <div class="relatorio-card" (click)="gerarRelatorio('visitas')">
+      <div class="relatorio-icon">
+        <i class="fas fa-home"></i>
+      </div>
+      <h3>Relatório de Visitas</h3>
+      <p>Visitas realizadas e pendentes</p>
+    </div>
+
+    <div class="relatorio-card" (click)="gerarRelatorio('documentos')">
+      <div class="relatorio-icon">
+        <i class="fas fa-file-alt"></i>
+      </div>
+      <h3>Relatório de Documentos</h3>
+      <p>Documentos por tipo e status</p>
+    </div>
+
+    <div class="relatorio-card" (click)="gerarRelatorio('atividades')">
+      <div class="relatorio-icon">
+        <i class="fas fa-chart-bar"></i>
+      </div>
+      <h3>Relatório de Atividades</h3>
+      <p>Atividades realizadas por assistido</p>
+    </div>
+
+    <div class="relatorio-card" (click)="gerarRelatorio('compliance')">
+      <div class="relatorio-icon">
+        <i class="fas fa-shield-alt"></i>
+      </div>
+      <h3>Relatório de Compliance</h3>
+      <p>Conformidade com as obrigações legais</p>
+    </div>
+  </div>
+</div>
