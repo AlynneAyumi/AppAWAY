@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { AssistidoService } from '../../../services/assistido.service';
 import { Assistido, AssistidoFiltro, StatusAssistido, TipoPena } from '../../../models/assistido.model';
 import Swal from 'sweetalert2';
@@ -28,7 +29,10 @@ export class AssistidoListComponent implements OnInit {
   statusOptions = Object.values(StatusAssistido);
   tipoPenaOptions = Object.values(TipoPena);
 
-  constructor(private assistidoService: AssistidoService) {}
+  constructor(
+    private assistidoService: AssistidoService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.carregarAssistidos();
@@ -157,5 +161,13 @@ export class AssistidoListComponent implements OnInit {
     }
     
     return paginas;
+  }
+
+  novoAssistido(): void {
+    this.router.navigate(['/assistidos/novo']);
+  }
+
+  editarAssistido(assistido: Assistido): void {
+    this.router.navigate(['/assistidos/editar', assistido.id]);
   }
 }

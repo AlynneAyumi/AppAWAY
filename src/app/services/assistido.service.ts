@@ -37,10 +37,55 @@ export class AssistidoService {
     );
   }
 
-  criar(assistido: Assistido): Observable<Assistido> {
-    const backendAssistido = this.mapper.mapAssistidoToBackend(assistido);
-    return this.http.post<any>(`${this.API_URL}/save`, backendAssistido).pipe(
-      map(backendResponse => this.mapper.mapAssistidoFromBackend(backendResponse))
+  criar(assistido: any): Observable<Assistido> {
+    // O componente já envia no formato correto (AssistidoCreateRequest)
+    // Apenas garantir que os campos estão mapeados corretamente
+    const createRequest = {
+      numAuto: assistido.numAuto || '',
+      numProcesso: assistido.numProcesso || '',
+      observacao: assistido.observacao || '',
+      pessoa: {
+        nome: assistido.pessoa?.nome || '',
+        segundoNome: assistido.pessoa?.segundoNome || '',
+        cpf: assistido.pessoa?.cpf || '',
+        dataNascimento: assistido.pessoa?.dataNascimento || '',
+        telefone: assistido.pessoa?.telefone || '',
+        endereco: {
+          logradouro: assistido.pessoa?.endereco?.logradouro || ''
+        }
+      }
+    };
+    
+    console.log('Enviando para backend:', createRequest);
+    
+    return this.http.post<any>(`${this.API_URL}/save`, createRequest).pipe(
+      map(response => {
+        console.log('Resposta do backend:', response);
+        // O backend agora retorna JSON estruturado
+        if (response.success) {
+          return {
+            id: response.id,
+            idAssistido: response.id,
+            nome: createRequest.pessoa.nome,
+            numProcesso: createRequest.numProcesso,
+            observacao: createRequest.observacao,
+            pessoa: {
+              idPessoa: Date.now(),
+              nome: createRequest.pessoa.nome,
+              segundoNome: createRequest.pessoa.segundoNome,
+              cpf: createRequest.pessoa.cpf,
+              dataNascimento: createRequest.pessoa.dataNascimento,
+              telefone: createRequest.pessoa.telefone,
+              endereco: {
+                idEndereco: Date.now(),
+                logradouro: createRequest.pessoa.endereco.logradouro
+              }
+            }
+          } as Assistido;
+        } else {
+          throw new Error(response.message || 'Erro desconhecido');
+        }
+      })
     );
   }
 

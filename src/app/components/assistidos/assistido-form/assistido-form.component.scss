@@ -1,0 +1,277 @@
+.assistido-form-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.form-header {
+  text-align: center;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #f0f0f0;
+
+  h2 {
+    color: #333;
+    font-size: 28px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  .form-subtitle {
+    color: #666;
+    font-size: 16px;
+    margin: 0;
+  }
+}
+
+.assistido-form {
+  .form-section {
+    margin-bottom: 35px;
+    
+    h3 {
+      color: #2c3e50;
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #e9ecef;
+      display: flex;
+      align-items: center;
+      
+      &:before {
+        content: '';
+        width: 4px;
+        height: 20px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        margin-right: 12px;
+        border-radius: 2px;
+      }
+    }
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 20px;
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+      gap: 15px;
+    }
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+
+    label {
+      font-weight: 600;
+      color: #495057;
+      margin-bottom: 8px;
+      font-size: 14px;
+      
+      &:after {
+        content: ' *';
+        color: #dc3545;
+        display: none;
+      }
+      
+      &[for$="nome"]:after,
+      &[for$="segundoNome"]:after,
+      &[for$="cpf"]:after,
+      &[for$="dataNascimento"]:after,
+      &[for$="telefone"]:after,
+      &[for$="endereco"]:after,
+      &[for$="numProcesso"]:after,
+      &[for$="numAuto"]:after {
+        display: inline;
+      }
+    }
+
+    .form-control {
+      padding: 12px 16px;
+      border: 2px solid #e9ecef;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: all 0.3s ease;
+      background-color: #ffffff;
+
+      &:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        background-color: #ffffff;
+      }
+
+      &.is-invalid {
+        border-color: #dc3545;
+        box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+      }
+
+      &::placeholder {
+        color: #adb5bd;
+        font-style: italic;
+      }
+
+      &[type="date"] {
+        color: #495057;
+        
+        &::-webkit-calendar-picker-indicator {
+          color: #667eea;
+          cursor: pointer;
+        }
+      }
+    }
+
+    select.form-control {
+      cursor: pointer;
+      
+      option {
+        padding: 10px;
+      }
+    }
+
+    textarea.form-control {
+      resize: vertical;
+      min-height: 80px;
+      font-family: inherit;
+    }
+
+    .invalid-feedback {
+      color: #dc3545;
+      font-size: 12px;
+      margin-top: 6px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      
+      &:before {
+        content: '⚠';
+        margin-right: 6px;
+      }
+    }
+  }
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+  margin-top: 40px;
+  padding-top: 25px;
+  border-top: 2px solid #f0f0f0;
+
+  @media (max-width: 576px) {
+    flex-direction: column-reverse;
+    gap: 10px;
+  }
+
+  .btn {
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 120px;
+    justify-content: center;
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    i {
+      font-size: 16px;
+    }
+
+    &.btn-secondary {
+      background-color: #6c757d;
+      color: white;
+
+      &:hover:not(:disabled) {
+        background-color: #5a6268;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(108, 117, 125, 0.3);
+      }
+    }
+
+    &.btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+
+      &:hover:not(:disabled) {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 12px rgba(102, 126, 234, 0.4);
+      }
+
+      &:disabled {
+        background: #ccc;
+      }
+    }
+
+    @media (max-width: 576px) {
+      width: 100%;
+    }
+  }
+}
+
+// Loading state
+.form-control:disabled {
+  background-color: #f8f9fa;
+  opacity: 0.7;
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .assistido-form-container {
+    margin: 10px;
+    padding: 15px;
+    border-radius: 8px;
+  }
+
+  .form-header {
+    margin-bottom: 20px;
+    
+    h2 {
+      font-size: 24px;
+    }
+    
+    .form-subtitle {
+      font-size: 14px;
+    }
+  }
+
+  .assistido-form .form-section {
+    margin-bottom: 25px;
+    
+    h3 {
+      font-size: 18px;
+      margin-bottom: 15px;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .assistido-form-container {
+    margin: 5px;
+    padding: 12px;
+  }
+  
+  .form-header h2 {
+    font-size: 20px;
+  }
+  
+  .assistido-form .form-group .form-control {
+    padding: 10px 12px;
+    font-size: 16px; // Prevents zoom on iOS
+  }
+}

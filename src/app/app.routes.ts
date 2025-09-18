@@ -25,6 +25,14 @@ export const routes: Routes = [
         loadComponent: () => import('./components/assistidos/assistido-list/assistido-list.component').then(m => m.AssistidoListComponent)
       },
       {
+        path: 'assistidos/novo',
+        loadComponent: () => import('./components/assistidos/assistido-form/assistido-form.component').then(m => m.AssistidoFormComponent)
+      },
+      {
+        path: 'assistidos/editar/:id',
+        loadComponent: () => import('./components/assistidos/assistido-form/assistido-form.component').then(m => m.AssistidoFormComponent)
+      },
+      {
         path: 'comparecimentos',
         loadComponent: () => import('./components/comparecimentos/comparecimento-list/comparecimento-list.component').then(m => m.ComparecimentoListComponent)
       },
