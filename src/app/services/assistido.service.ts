@@ -3,12 +3,13 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { Assistido, AssistidoFiltro } from '../models/assistido.model';
 import { MapperService } from './mapper.service';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AssistidoService {
-  private readonly API_URL = 'http://localhost:8080/assistido';
+  private readonly API_URL = `${environment.apiUrl}/assistido`;
 
   constructor(private http: HttpClient, private mapper: MapperService) { }
 

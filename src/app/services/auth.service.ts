@@ -4,12 +4,13 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { tap, map } from 'rxjs/operators';
 import { LoginRequest, LoginResponse, Usuario, PerfilUsuario } from '../models/usuario.model';
 import { MapperService } from './mapper.service';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private readonly API_URL = 'http://localhost:8080/auth';
+  private readonly API_URL = `${environment.apiUrl}/auth`;
   private currentUserSubject = new BehaviorSubject<Usuario | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
 
@@ -18,7 +19,25 @@ export class AuthService {
   }
 
   login(loginRequest: LoginRequest): Observable<LoginResponse> {
-    // Simulação temporária para demonstração - REMOVER quando backend estiver disponível
+    // MODO PRODUÇÃO: Chamadas reais para o backend
+    return this.http.post<any>(`${this.API_URL}/login`, loginRequest).pipe(
+      map(backendResponse => {
+        const usuario = this.mapper.mapUsuarioFromBackend(backendResponse.usuario);
+        return {
+          token: backendResponse.token,
+          usuario: usuario,
+          expiresIn: backendResponse.expiresIn
+        };
+      }),
+      tap((response: LoginResponse) => {
+        localStorage.setItem(environment.auth.tokenStorageKey, response.token);
+        localStorage.setItem(environment.auth.userStorageKey, JSON.stringify(response.usuario));
+        this.currentUserSubject.next(response.usuario);
+      })
+    );
+
+    // MODO DESENVOLVIMENTO: Simulação temporária (descomente se necessário para testes sem backend)
+    /*
     return new Observable(observer => {
       setTimeout(() => {
         const mockResponse: LoginResponse = {
@@ -36,43 +55,25 @@ export class AuthService {
           expiresIn: 3600
         };
         
-        localStorage.setItem('token', mockResponse.token);
-        localStorage.setItem('user', JSON.stringify(mockResponse.usuario));
+        localStorage.setItem(environment.auth.tokenStorageKey, mockResponse.token);
+        localStorage.setItem(environment.auth.userStorageKey, JSON.stringify(mockResponse.usuario));
         this.currentUserSubject.next(mockResponse.usuario);
         
         observer.next(mockResponse);
         observer.complete();
-      }, 1000); // Simula delay de rede
+      }, 1000);
     });
-    
-    // Código original comentado - descomente quando backend estiver disponível
-    /*
-    return this.http.post<any>(`${this.API_URL}/login`, loginRequest).pipe(
-      map(backendResponse => {
-        const usuario = this.mapper.mapUsuarioFromBackend(backendResponse.usuario);
-        return {
-          token: backendResponse.token,
-          usuario: usuario,
-          expiresIn: backendResponse.expiresIn
-        };
-      }),
-      tap((response: LoginResponse) => {
-        localStorage.setItem('token', response.token);
-        localStorage.setItem('user', JSON.stringify(response.usuario));
-        this.currentUserSubject.next(response.usuario);
-      })
-    );
     */
   }
 
   logout(): void {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    localStorage.removeItem(environment.auth.tokenStorageKey);
+    localStorage.removeItem(environment.auth.userStorageKey);
     this.currentUserSubject.next(null);
   }
 
   getToken(): string | null {
-    return localStorage.getItem('token');
+    return localStorage.getItem(environment.auth.tokenStorageKey);
   }
 
   isAuthenticated(): boolean {
@@ -84,7 +85,7 @@ export class AuthService {
   }
 
   private loadUserFromStorage(): void {
-    const user = localStorage.getItem('user');
+    const user = localStorage.getItem(environment.auth.userStorageKey);
     if (user) {
       this.currentUserSubject.next(JSON.parse(user));
     }
