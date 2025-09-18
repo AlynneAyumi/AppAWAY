@@ -80,6 +80,12 @@
             </div>
 
             <div class="assistido-actions">
+              <button class="btn-action btn-attendance" title="Registrar Comparecimento" (click)="registrarComparecimento(assistido)">
+                <i class="fas fa-calendar-check"></i>
+              </button>
+              <button class="btn-action btn-documents" title="Gerenciar Documentos" (click)="gerenciarDocumentos(assistido)">
+                <i class="fas fa-file-alt"></i>
+              </button>
               <button class="btn-action btn-view" title="Visualizar">
                 <i class="fas fa-eye"></i>
               </button>
@@ -134,3 +140,269 @@
     }
   }
 </div>
+
+<!-- Modal de Registrar Comparecimento -->
+@if (showComparecimentoModal) {
+  <div class="modal-overlay" (click)="fecharModalComparecimento()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Registrar Comparecimento</h2>
+        <button class="btn-close" (click)="fecharModalComparecimento()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="assistido-info-modal">
+          <div class="assistido-avatar-modal">
+            <i class="fas fa-user"></i>
+          </div>
+          <div class="assistido-details-modal">
+            <h3>{{ assistidoSelecionado?.pessoa?.nome }} {{ assistidoSelecionado?.pessoa?.segundoNome }}</h3>
+            <p><strong>CPF:</strong> {{ assistidoSelecionado?.pessoa?.cpf }}</p>
+            <p><strong>Processo:</strong> {{ assistidoSelecionado?.numProcesso }}</p>
+          </div>
+        </div>
+
+        <form class="comparecimento-form">
+          <div class="form-group">
+            <label for="dataComparecimento">Data do Comparecimento *</label>
+            <input
+              type="date"
+              id="dataComparecimento"
+              [(ngModel)]="comparecimentoForm.data"
+              name="dataComparecimento"
+              class="form-control"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label>Status do Comparecimento *</label>
+            <div class="radio-group">
+              <label class="radio-option">
+                <input
+                  type="radio"
+                  [(ngModel)]="comparecimentoForm.flagComparecimento"
+                  name="flagComparecimento"
+                  [value]="true"
+                />
+                <span class="radio-custom"></span>
+                <i class="fas fa-check-circle text-success"></i>
+                Compareceu
+              </label>
+              <label class="radio-option">
+                <input
+                  type="radio"
+                  [(ngModel)]="comparecimentoForm.flagComparecimento"
+                  name="flagComparecimento"
+                  [value]="false"
+                />
+                <span class="radio-custom"></span>
+                <i class="fas fa-times-circle text-danger"></i>
+                Falta
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="observacoes">Observações</label>
+            <textarea
+              id="observacoes"
+              [(ngModel)]="comparecimentoForm.observacoes"
+              name="observacoes"
+              class="form-control"
+              rows="3"
+              placeholder="Observações sobre o comparecimento (opcional)"
+            ></textarea>
+          </div>
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="fecharModalComparecimento()">
+          <i class="fas fa-times"></i>
+          Cancelar
+        </button>
+        <button 
+          class="btn btn-primary" 
+          (click)="salvarComparecimento()"
+          [disabled]="salvandoComparecimento"
+        >
+          @if (salvandoComparecimento) {
+            <i class="fas fa-spinner fa-spin"></i>
+            Salvando...
+          } @else {
+            <i class="fas fa-save"></i>
+            Salvar Comparecimento
+          }
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Modal de Gerenciar Documentos -->
+@if (showDocumentosModal) {
+  <div class="modal-overlay" (click)="fecharModalDocumentos()">
+    <div class="modal-content modal-large" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Documentos do Assistido</h2>
+        <button class="btn-close" (click)="fecharModalDocumentos()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="assistido-info-modal">
+          <div class="assistido-avatar-modal">
+            <i class="fas fa-user"></i>
+          </div>
+          <div class="assistido-details-modal">
+            <h3>{{ assistidoSelecionado?.pessoa?.nome }} {{ assistidoSelecionado?.pessoa?.segundoNome }}</h3>
+            <p><strong>CPF:</strong> {{ assistidoSelecionado?.pessoa?.cpf }}</p>
+            <p><strong>Processo:</strong> {{ assistidoSelecionado?.numProcesso }}</p>
+          </div>
+        </div>
+
+        <!-- Botão para adicionar novo documento -->
+        <div class="documentos-header">
+          <h3>Documentos Cadastrados</h3>
+          <button class="btn btn-primary btn-sm" (click)="novoDocumento()">
+            <i class="fas fa-plus"></i>
+            Adicionar Documento
+          </button>
+        </div>
+
+        <!-- Lista de documentos -->
+        <div class="documentos-list-modal">
+          @if (documentosAssistido.length === 0) {
+            <div class="empty-state-small">
+              <i class="fas fa-file-alt"></i>
+              <p>Nenhum documento cadastrado para este assistido.</p>
+            </div>
+          } @else {
+            @for (documento of documentosAssistido; track documento.id) {
+              <div class="documento-item">
+                <div class="documento-info-small">
+                  <div class="documento-icon-small">
+                    <i class="fas fa-file-alt"></i>
+                  </div>
+                  <div class="documento-details-small">
+                    <h4>{{ documento.nome }}</h4>
+                    <p>{{ getTipoDocumentoText(documento.tipo) }}</p>
+                    <span class="data-upload">{{ documento.dataUpload | date:'dd/MM/yyyy' }}</span>
+                  </div>
+                </div>
+                <div class="documento-actions-small">
+                  <button class="btn-action-small btn-view" title="Visualizar">
+                    <i class="fas fa-eye"></i>
+                  </button>
+                  <button class="btn-action-small btn-download" title="Download">
+                    <i class="fas fa-download"></i>
+                  </button>
+                  <button class="btn-action-small btn-delete" title="Excluir" (click)="excluirDocumento(documento)">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+              </div>
+            }
+          }
+        </div>
+
+        <!-- Formulário para novo documento -->
+        @if (showNovoDocumentoForm) {
+          <div class="novo-documento-form">
+            <h4>Adicionar Novo Documento</h4>
+            <form class="documento-form">
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="nomeDocumento">Nome do Documento *</label>
+                  <input
+                    type="text"
+                    id="nomeDocumento"
+                    [(ngModel)]="documentoForm.nome"
+                    name="nomeDocumento"
+                    class="form-control"
+                    placeholder="Ex: RG João Silva"
+                    required
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="tipoDocumento">Tipo *</label>
+                  <select
+                    id="tipoDocumento"
+                    [(ngModel)]="documentoForm.tipo"
+                    name="tipoDocumento"
+                    class="form-control"
+                    required
+                  >
+                    <option value="">Selecione o tipo</option>
+                    <option value="RG">RG</option>
+                    <option value="CPF">CPF</option>
+                    <option value="COMPROVANTE_RESIDENCIA">Comprovante de Residência</option>
+                    <option value="CERTIDAO_CRIMINAL">Certidão Criminal</option>
+                    <option value="RELATORIO_SOCIAL">Relatório Social</option>
+                    <option value="OUTROS">Outros</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label for="arquivoDocumento">Arquivo *</label>
+                <input
+                  type="file"
+                  id="arquivoDocumento"
+                  (change)="onFileSelected($event)"
+                  class="form-control"
+                  accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                />
+                <small class="form-text">Formatos aceitos: PDF, JPG, PNG, DOC, DOCX</small>
+              </div>
+
+              <div class="form-group">
+                <label for="descricaoDocumento">Descrição</label>
+                <textarea
+                  id="descricaoDocumento"
+                  [(ngModel)]="documentoForm.descricao"
+                  name="descricaoDocumento"
+                  class="form-control"
+                  rows="3"
+                  placeholder="Descrição adicional do documento (opcional)"
+                ></textarea>
+              </div>
+
+              <div class="form-actions-inline">
+                <button type="button" class="btn btn-secondary btn-sm" (click)="cancelarNovoDocumento()">
+                  <i class="fas fa-times"></i>
+                  Cancelar
+                </button>
+                <button 
+                  type="button" 
+                  class="btn btn-primary btn-sm" 
+                  (click)="salvarDocumento()"
+                  [disabled]="salvandoDocumento"
+                >
+                  @if (salvandoDocumento) {
+                    <i class="fas fa-spinner fa-spin"></i>
+                    Salvando...
+                  } @else {
+                    <i class="fas fa-save"></i>
+                    Salvar
+                  }
+                </button>
+              </div>
+            </form>
+          </div>
+        }
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="fecharModalDocumentos()">
+          <i class="fas fa-times"></i>
+          Fechar
+        </button>
+      </div>
+    </div>
+  </div>
+}

@@ -33,16 +33,8 @@ export const routes: Routes = [
         loadComponent: () => import('./components/assistidos/assistido-form/assistido-form.component').then(m => m.AssistidoFormComponent)
       },
       {
-        path: 'comparecimentos',
-        loadComponent: () => import('./components/comparecimentos/comparecimento-list/comparecimento-list.component').then(m => m.ComparecimentoListComponent)
-      },
-      {
         path: 'calendario',
         loadComponent: () => import('./components/calendario/calendario.component').then(m => m.CalendarioComponent)
-      },
-      {
-        path: 'documentos',
-        loadComponent: () => import('./components/documentos/documento-list/documento-list.component').then(m => m.DocumentoListComponent)
       },
       {
         path: 'relatorios',

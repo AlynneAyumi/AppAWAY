@@ -3,7 +3,9 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AssistidoService } from '../../../services/assistido.service';
-import { Assistido, AssistidoFiltro, StatusAssistido, TipoPena } from '../../../models/assistido.model';
+import { ComparecimentoService } from '../../../services/comparecimento.service';
+import { Assistido, AssistidoFiltro, StatusAssistido, TipoPena, Comparecimento } from '../../../models/assistido.model';
+import { Documento, TipoDocumento } from '../../../models/documento.model';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -29,8 +31,31 @@ export class AssistidoListComponent implements OnInit {
   statusOptions = Object.values(StatusAssistido);
   tipoPenaOptions = Object.values(TipoPena);
 
+  // Propriedades do modal de comparecimento
+  showComparecimentoModal = false;
+  assistidoSelecionado: Assistido | null = null;
+  salvandoComparecimento = false;
+  comparecimentoForm = {
+    data: new Date().toISOString().split('T')[0], // Data atual
+    flagComparecimento: true,
+    observacoes: ''
+  };
+
+  // Propriedades do modal de documentos
+  showDocumentosModal = false;
+  showNovoDocumentoForm = false;
+  documentosAssistido: Documento[] = [];
+  salvandoDocumento = false;
+  documentoForm = {
+    nome: '',
+    tipo: '',
+    descricao: '',
+    arquivo: null as File | null
+  };
+
   constructor(
     private assistidoService: AssistidoService,
+    private comparecimentoService: ComparecimentoService,
     private router: Router
   ) {}
 
@@ -169,5 +194,181 @@ export class AssistidoListComponent implements OnInit {
 
   editarAssistido(assistido: Assistido): void {
     this.router.navigate(['/assistidos/editar', assistido.id]);
+  }
+
+  // Métodos do modal de comparecimento
+  registrarComparecimento(assistido: Assistido): void {
+    this.assistidoSelecionado = assistido;
+    this.showComparecimentoModal = true;
+    // Reset do form
+    this.comparecimentoForm = {
+      data: new Date().toISOString().split('T')[0],
+      flagComparecimento: true,
+      observacoes: ''
+    };
+  }
+
+  fecharModalComparecimento(): void {
+    this.showComparecimentoModal = false;
+    this.assistidoSelecionado = null;
+  }
+
+  salvarComparecimento(): void {
+    if (!this.assistidoSelecionado || !this.comparecimentoForm.data) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Dados obrigatórios',
+        text: 'Por favor, preencha a data do comparecimento',
+        confirmButtonText: 'OK'
+      });
+      return;
+    }
+
+    this.salvandoComparecimento = true;
+
+    const comparecimento: any = {
+      data: this.comparecimentoForm.data,
+      flagComparecimento: this.comparecimentoForm.flagComparecimento,
+      observacoes: this.comparecimentoForm.observacoes,
+      assistido: {
+        idAssistido: this.assistidoSelecionado.idAssistido
+      }
+    };
+
+    this.comparecimentoService.criar(comparecimento).subscribe({
+      next: (response) => {
+        this.salvandoComparecimento = false;
+        Swal.fire({
+          icon: 'success',
+          title: 'Comparecimento registrado!',
+          text: `Comparecimento de ${this.assistidoSelecionado?.pessoa?.nome} foi registrado com sucesso.`,
+          timer: 3000,
+          showConfirmButton: false
+        });
+        this.fecharModalComparecimento();
+        // Opcional: recarregar a lista para atualizar status
+        this.carregarAssistidos();
+      },
+      error: (error) => {
+        this.salvandoComparecimento = false;
+        console.error('Erro ao salvar comparecimento:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Erro ao registrar comparecimento',
+          text: 'Houve um problema ao salvar o comparecimento. Tente novamente.',
+          confirmButtonText: 'OK'
+        });
+      }
+    });
+  }
+
+  // Métodos do modal de documentos
+  gerenciarDocumentos(assistido: Assistido): void {
+    this.assistidoSelecionado = assistido;
+    this.showDocumentosModal = true;
+    this.showNovoDocumentoForm = false;
+    this.carregarDocumentosAssistido();
+  }
+
+  fecharModalDocumentos(): void {
+    this.showDocumentosModal = false;
+    this.showNovoDocumentoForm = false;
+    this.assistidoSelecionado = null;
+    this.documentosAssistido = [];
+  }
+
+  carregarDocumentosAssistido(): void {
+    // Por enquanto, simular dados vazios
+    // Quando houver serviço de documentos, implementar aqui
+    this.documentosAssistido = [];
+  }
+
+  novoDocumento(): void {
+    this.showNovoDocumentoForm = true;
+    this.documentoForm = {
+      nome: '',
+      tipo: '',
+      descricao: '',
+      arquivo: null
+    };
+  }
+
+  cancelarNovoDocumento(): void {
+    this.showNovoDocumentoForm = false;
+    this.documentoForm = {
+      nome: '',
+      tipo: '',
+      descricao: '',
+      arquivo: null
+    };
+  }
+
+  onFileSelected(event: any): void {
+    const file = event.target.files[0];
+    if (file) {
+      this.documentoForm.arquivo = file;
+    }
+  }
+
+  salvarDocumento(): void {
+    if (!this.documentoForm.nome || !this.documentoForm.tipo || !this.documentoForm.arquivo) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Dados obrigatórios',
+        text: 'Por favor, preencha nome, tipo e selecione um arquivo',
+        confirmButtonText: 'OK'
+      });
+      return;
+    }
+
+    this.salvandoDocumento = true;
+
+    // Simular salvamento por enquanto
+    setTimeout(() => {
+      this.salvandoDocumento = false;
+      Swal.fire({
+        icon: 'success',
+        title: 'Documento salvo!',
+        text: `Documento "${this.documentoForm.nome}" foi salvo com sucesso.`,
+        timer: 3000,
+        showConfirmButton: false
+      });
+      this.cancelarNovoDocumento();
+      this.carregarDocumentosAssistido();
+    }, 2000);
+  }
+
+  excluirDocumento(documento: Documento): void {
+    Swal.fire({
+      title: 'Confirmar Exclusão',
+      text: `Tem certeza que deseja excluir o documento "${documento.nome}"?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sim, excluir',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#dc3545'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Swal.fire({
+          icon: 'success',
+          title: 'Documento excluído!',
+          timer: 2000,
+          showConfirmButton: false
+        });
+        this.carregarDocumentosAssistido();
+      }
+    });
+  }
+
+  getTipoDocumentoText(tipo: TipoDocumento): string {
+    switch (tipo) {
+      case TipoDocumento.RG: return 'RG';
+      case TipoDocumento.CPF: return 'CPF';
+      case TipoDocumento.COMPROVANTE_RESIDENCIA: return 'Comprovante de Residência';
+      case TipoDocumento.CERTIDAO_CRIMINAL: return 'Certidão Criminal';
+      case TipoDocumento.RELATORIO_SOCIAL: return 'Relatório Social';
+      case TipoDocumento.OUTROS: return 'Outros';
+      default: return tipo;
+    }
   }
 }

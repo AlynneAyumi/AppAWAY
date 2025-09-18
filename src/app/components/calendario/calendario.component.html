@@ -1,7 +1,7 @@
 <div class="calendario-container">
   <div class="calendario-header">
     <h1>Calendário de Comparecimentos</h1>
-    <p>Visualize e gerencie os comparecimentos por mês</p>
+    <p>Visualize os comparecimentos registrados por mês</p>
   </div>
 
   <!-- Controles do calendário -->
@@ -139,19 +139,11 @@
           }
         </div>
         
-        <div class="modal-actions">
-          @if (!comparecimentoSelecionado.flagComparecimento) {
-            <button class="btn btn-success" (click)="confirmarComparecimento(comparecimentoSelecionado)">
-              <i class="fas fa-check"></i> Confirmar Comparecimento
-            </button>
-            <button class="btn btn-danger" (click)="registrarFalta(comparecimentoSelecionado)">
-              <i class="fas fa-times"></i> Registrar Falta
-            </button>
-          } @else {
-            <span class="text-success">
-              <i class="fas fa-check-circle"></i> Comparecimento já confirmado
-            </span>
-          }
+        <div class="modal-info">
+          <div class="info-note">
+            <i class="fas fa-info-circle"></i>
+            Para registrar novos comparecimentos, acesse a lista de Assistidos.
+          </div>
         </div>
       }
     </div>
