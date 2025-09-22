@@ -45,6 +45,14 @@ export class AssistidoFormComponent implements OnInit {
         this.carregarAssistido();
       }
     });
+
+    // Debug: monitorar mudanças no formulário
+    this.assistidoForm.statusChanges.subscribe(status => {
+      console.log('Status do formulário:', status);
+      if (status === 'INVALID') {
+        console.log('Formulário inválido. Erros:', this.getFormErrors());
+      }
+    });
   }
 
   carregarAssistido(): void {
@@ -53,17 +61,41 @@ export class AssistidoFormComponent implements OnInit {
     this.loading = true;
     this.assistidoService.buscarPorId(this.assistidoId).subscribe({
       next: (assistido) => {
+        console.log('Dados carregados do assistido:', assistido);
+        
+        // Formatar CPF se existir
+        let cpfFormatado = '';
+        if (assistido.pessoa?.cpf) {
+          const cpf = assistido.pessoa.cpf.replace(/\D/g, '');
+          if (cpf.length === 11) {
+            cpfFormatado = cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+          } else {
+            cpfFormatado = assistido.pessoa.cpf;
+          }
+        }
+
+        // Formatar data de nascimento
+        let dataFormatada = '';
+        if (assistido.pessoa?.dataNascimento) {
+          if (typeof assistido.pessoa.dataNascimento === 'string') {
+            dataFormatada = assistido.pessoa.dataNascimento;
+          } else {
+            dataFormatada = new Date(assistido.pessoa.dataNascimento).toISOString().split('T')[0];
+          }
+        }
+
         this.assistidoForm.patchValue({
           nome: assistido.pessoa?.nome || '',
           segundoNome: assistido.pessoa?.segundoNome || '',
-          cpf: assistido.pessoa?.cpf || '',
-          dataNascimento: assistido.pessoa?.dataNascimento ? new Date(assistido.pessoa.dataNascimento).toISOString().split('T')[0] : '',
+          cpf: cpfFormatado,
+          dataNascimento: dataFormatada,
           telefone: assistido.pessoa?.telefone || '',
           endereco: assistido.pessoa?.endereco?.logradouro || '',
           numProcesso: assistido.numProcesso || '',
           numAuto: (assistido as any).numAuto || '',
           observacao: assistido.observacao || ''
         });
+        
         this.loading = false;
       },
       error: (error) => {
@@ -81,54 +113,128 @@ export class AssistidoFormComponent implements OnInit {
   }
 
   onSubmit(): void {
+    // Debug: verificar estado do formulário
+    console.log('Formulário válido:', this.assistidoForm.valid);
+    console.log('Erros do formulário:', this.assistidoForm.errors);
+    console.log('Valores do formulário:', this.assistidoForm.value);
+    
+    // Verificar erros em cada campo
+    Object.keys(this.assistidoForm.controls).forEach(key => {
+      const control = this.assistidoForm.get(key);
+      if (control && control.errors) {
+        console.log(`Erro no campo ${key}:`, control.errors);
+      }
+    });
+
     if (this.assistidoForm.valid) {
       this.loading = true;
       const formValue = this.assistidoForm.value;
       
-      const assistidoData = {
-        idAssistido: this.assistidoId,
-        numProcesso: formValue.numProcesso,
-        numAuto: formValue.numAuto,
-        observacao: formValue.observacao,
-        pessoa: {
-          nome: formValue.nome,
-          segundoNome: formValue.segundoNome,
-          cpf: formValue.cpf,
-          dataNascimento: formValue.dataNascimento,
-          telefone: formValue.telefone,
-          endereco: {
-            logradouro: formValue.endereco
+      if (this.isEditMode) {
+        // Para edição, precisamos buscar os dados atuais primeiro para preservar os IDs
+        this.assistidoService.buscarPorId(this.assistidoId!).subscribe({
+          next: (assistidoAtual) => {
+            const assistidoData = {
+              idAssistido: this.assistidoId,
+              numProcesso: formValue.numProcesso,
+              numAuto: formValue.numAuto,
+              observacao: formValue.observacao,
+              pessoa: {
+                idPessoa: assistidoAtual.pessoa?.idPessoa,
+                nome: formValue.nome,
+                segundoNome: formValue.segundoNome,
+                cpf: formValue.cpf,
+                dataNascimento: formValue.dataNascimento,
+                telefone: formValue.telefone,
+                endereco: {
+                  idEndereco: assistidoAtual.pessoa?.endereco?.idEndereco,
+                  logradouro: formValue.endereco,
+                  cep: assistidoAtual.pessoa?.endereco?.cep || '00000-000',
+                  bairro: assistidoAtual.pessoa?.endereco?.bairro || 'A definir',
+                  cidade: assistidoAtual.pessoa?.endereco?.cidade || 'A definir',
+                  estado: assistidoAtual.pessoa?.endereco?.estado || 'A definir',
+                  numero: assistidoAtual.pessoa?.endereco?.numero || 0
+                }
+              }
+            };
+
+            this.assistidoService.atualizar(this.assistidoId!, assistidoData).subscribe({
+              next: (response) => {
+                this.loading = false;
+                Swal.fire({
+                  icon: 'success',
+                  title: 'Assistido atualizado com sucesso!',
+                  text: 'Assistido foi atualizado com sucesso.',
+                  timer: 2000,
+                  showConfirmButton: false
+                });
+                this.router.navigate(['/assistidos']);
+              },
+              error: (error) => {
+                this.loading = false;
+                console.error('Erro ao atualizar assistido:', error);
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Erro ao atualizar assistido',
+                  text: 'Verifique os dados e tente novamente',
+                  confirmButtonText: 'OK'
+                });
+              }
+            });
+          },
+          error: (error) => {
+            this.loading = false;
+            console.error('Erro ao buscar assistido para edição:', error);
+            Swal.fire({
+              icon: 'error',
+              title: 'Erro ao carregar dados',
+              text: 'Não foi possível carregar os dados do assistido para edição',
+              confirmButtonText: 'OK'
+            });
           }
-        }
-      };
+        });
+      } else {
+        // Para criação, usar o formato original
+        const assistidoData = {
+          numProcesso: formValue.numProcesso,
+          numAuto: formValue.numAuto,
+          observacao: formValue.observacao,
+          pessoa: {
+            nome: formValue.nome,
+            segundoNome: formValue.segundoNome,
+            cpf: formValue.cpf,
+            dataNascimento: formValue.dataNascimento,
+            telefone: formValue.telefone,
+            endereco: {
+              logradouro: formValue.endereco
+            }
+          }
+        };
 
-      const operacao = this.isEditMode 
-        ? this.assistidoService.atualizar(this.assistidoId!, assistidoData as any)
-        : this.assistidoService.criar(assistidoData as any);
-
-      operacao.subscribe({
-        next: (response) => {
-          this.loading = false;
-          Swal.fire({
-            icon: 'success',
-            title: `Assistido ${this.isEditMode ? 'atualizado' : 'cadastrado'} com sucesso!`,
-            text: `Assistido foi ${this.isEditMode ? 'atualizado' : 'cadastrado'} com sucesso.`,
-            timer: 2000,
-            showConfirmButton: false
-          });
-          this.router.navigate(['/assistidos']);
-        },
-        error: (error) => {
-          this.loading = false;
-          console.error('Erro ao salvar assistido:', error);
-          Swal.fire({
-            icon: 'error',
-            title: `Erro ao ${this.isEditMode ? 'atualizar' : 'cadastrar'} assistido`,
-            text: 'Verifique os dados e tente novamente',
-            confirmButtonText: 'OK'
-          });
-        }
-      });
+        this.assistidoService.criar(assistidoData).subscribe({
+          next: (response) => {
+            this.loading = false;
+            Swal.fire({
+              icon: 'success',
+              title: 'Assistido cadastrado com sucesso!',
+              text: 'Assistido foi cadastrado com sucesso.',
+              timer: 2000,
+              showConfirmButton: false
+            });
+            this.router.navigate(['/assistidos']);
+          },
+          error: (error) => {
+            this.loading = false;
+            console.error('Erro ao cadastrar assistido:', error);
+            Swal.fire({
+              icon: 'error',
+              title: 'Erro ao cadastrar assistido',
+              text: 'Verifique os dados e tente novamente',
+              confirmButtonText: 'OK'
+            });
+          }
+        });
+      }
     } else {
       this.markFormGroupTouched();
       Swal.fire({
@@ -219,6 +325,18 @@ export class AssistidoFormComponent implements OnInit {
     }
     
     return null; // CPF válido
+  }
+
+  // Método para obter erros do formulário
+  private getFormErrors(): any {
+    const errors: any = {};
+    Object.keys(this.assistidoForm.controls).forEach(key => {
+      const control = this.assistidoForm.get(key);
+      if (control && control.errors) {
+        errors[key] = control.errors;
+      }
+    });
+    return errors;
   }
 
   // Formatar CPF com máscara

@@ -54,14 +54,6 @@ export const API_ENDPOINTS = {
     DELETE: '/documento/delete'
   },
 
-  // Relatórios
-  RELATORIO: {
-    BASE: '/relatorio',
-    COMPARECIMENTOS: '/relatorio/comparecimentos',
-    ASSISTIDOS: '/relatorio/assistidos',
-    EXPORT_PDF: '/relatorio/export/pdf',
-    EXPORT_EXCEL: '/relatorio/export/excel'
-  }
 };
 
 /**

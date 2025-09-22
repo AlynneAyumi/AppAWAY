@@ -18,6 +18,7 @@
           type="text"
           [(ngModel)]="filtro.nome"
           placeholder="Buscar por nome, CPF ou número do processo..."
+          (keyup)="onSearchInput()"
           (keyup.enter)="pesquisar()"
         />
       </div>
@@ -52,7 +53,7 @@
           <p>Não há assistidos cadastrados ou que correspondam aos filtros aplicados.</p>
         </div>
       } @else {
-        @for (assistido of assistidos; track assistido.idAssistido) {
+        @for (assistido of assistidos; track assistido.id) {
           <div class="assistido-card">
             <div class="assistido-avatar">
               <i class="fas fa-user"></i>
@@ -62,10 +63,10 @@
               <h3 class="assistido-name">{{ assistido.pessoa?.nome }} {{ assistido.pessoa?.segundoNome }}</h3>
               <div class="assistido-details">
                 <span class="detail-item">
-                  <strong>CPF:</strong> {{ assistido.pessoa?.cpf }}
+                  <strong>CPF:</strong> {{ assistido.pessoa?.cpf || 'Não informado' }}
                 </span>
                 <span class="detail-item">
-                  <strong>Processo:</strong> {{ assistido.numProcesso }}
+                  <strong>Processo:</strong> {{ assistido.numProcesso || 'Não informado' }}
                 </span>
                 <span class="detail-item">
                   <strong>Pena Alternativa</strong>
@@ -85,9 +86,6 @@
               </button>
               <button class="btn-action btn-documents" title="Gerenciar Documentos" (click)="gerenciarDocumentos(assistido)">
                 <i class="fas fa-file-alt"></i>
-              </button>
-              <button class="btn-action btn-view" title="Visualizar">
-                <i class="fas fa-eye"></i>
               </button>
               <button class="btn-action btn-edit" title="Editar" (click)="editarAssistido(assistido)">
                 <i class="fas fa-edit"></i>

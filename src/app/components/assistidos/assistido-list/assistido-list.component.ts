@@ -26,6 +26,7 @@ export class AssistidoListComponent implements OnInit {
   totalElements = 0;
   totalPages = 0;
   currentPage = 0;
+  searchTimeout: any;
 
   // Opções para os selects
   statusOptions = Object.values(StatusAssistido);
@@ -90,6 +91,15 @@ export class AssistidoListComponent implements OnInit {
     this.carregarAssistidos();
   }
 
+  // Busca em tempo real quando o usuário digita
+  onSearchInput(): void {
+    // Debounce para evitar muitas requisições
+    clearTimeout(this.searchTimeout);
+    this.searchTimeout = setTimeout(() => {
+      this.pesquisar();
+    }, 300); // Aguarda 300ms após parar de digitar
+  }
+
   limparFiltros(): void {
     this.filtro = {
       page: 0,
@@ -108,29 +118,46 @@ export class AssistidoListComponent implements OnInit {
 
     Swal.fire({
       title: 'Confirmar Exclusão',
-      text: `Tem certeza que deseja excluir o assistido ${assistido.nome}?`,
+      text: `Tem certeza que deseja excluir o assistido ${assistido.pessoa?.nome} ${assistido.pessoa?.segundoNome}?`,
+      html: `
+        <div style="text-align: left;">
+          <p><strong>Nome:</strong> ${assistido.pessoa?.nome} ${assistido.pessoa?.segundoNome}</p>
+          <p><strong>CPF:</strong> ${assistido.pessoa?.cpf}</p>
+          <p><strong>Processo:</strong> ${assistido.numProcesso}</p>
+          <br>
+          <p style="color: #dc3545; font-weight: bold;">⚠️ ATENÇÃO: Esta ação não pode ser desfeita!</p>
+          <p style="color: #dc3545;">Todos os dados relacionados (pessoa, endereço, comparecimentos) serão excluídos permanentemente.</p>
+        </div>
+      `,
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonText: 'Sim, excluir',
+      confirmButtonText: 'Sim, excluir permanentemente',
       cancelButtonText: 'Cancelar',
-      confirmButtonColor: '#dc3545'
+      confirmButtonColor: '#dc3545',
+      cancelButtonColor: '#6c757d',
+      width: '500px'
     }).then((result) => {
       if (result.isConfirmed) {
+        this.loading = true;
         this.assistidoService.excluir(assistido.id!).subscribe({
-          next: () => {
+          next: (response) => {
+            this.loading = false;
             Swal.fire({
               icon: 'success',
               title: 'Assistido excluído com sucesso!',
-              timer: 2000,
+              text: response.message || 'Assistido e todos os dados relacionados foram removidos permanentemente.',
+              timer: 3000,
               showConfirmButton: false
             });
             this.carregarAssistidos();
           },
           error: (error) => {
+            this.loading = false;
+            console.error('Erro ao excluir assistido:', error);
             Swal.fire({
               icon: 'error',
               title: 'Erro ao excluir assistido',
-              text: error.error || 'Erro interno do servidor',
+              text: error.message || error.error?.message || 'Erro interno do servidor',
               confirmButtonText: 'OK'
             });
           }

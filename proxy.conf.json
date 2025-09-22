@@ -1,13 +1,25 @@
 {
-  "/api/*": {
-    "target": "http://localhost:8080",
-    "secure": true,
+  "/api/assistido/*": {
+    "target": "http://localhost:8080/assistido",
+    "secure": false,
     "changeOrigin": true,
     "logLevel": "debug",
+    "pathRewrite": {
+      "^/api/assistido": ""
+    },
     "headers": {
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
       "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+    }
+  },
+  "/api/auth/*": {
+    "target": "http://localhost:8080/auth",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug",
+    "pathRewrite": {
+      "^/api/auth": ""
     }
   }
 }

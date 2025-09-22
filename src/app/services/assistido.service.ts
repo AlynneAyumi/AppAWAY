@@ -14,21 +14,53 @@ export class AssistidoService {
   constructor(private http: HttpClient, private mapper: MapperService) { }
 
   listar(filtro?: AssistidoFiltro): Observable<any> {
-    // O backend atual não suporta filtros, retorna todos os assistidos
     return this.http.get<any[]>(`${this.API_URL}/findAll`).pipe(
       map(backendAssistidos => {
-        const assistidos = backendAssistidos.map(assistido => this.mapper.mapAssistidoFromBackend(assistido));
+        let assistidos = backendAssistidos.map(assistido => this.mapper.mapAssistidoFromBackend(assistido));
+        
+        // Aplicar filtros no frontend
+        if (filtro) {
+          assistidos = this.aplicarFiltros(assistidos, filtro);
+        }
+        
+        // Paginação
+        const page = filtro?.page || 0;
+        const size = filtro?.size || 10;
+        const startIndex = page * size;
+        const endIndex = startIndex + size;
+        const paginatedAssistidos = assistidos.slice(startIndex, endIndex);
+        
         return {
-          content: assistidos,
+          content: paginatedAssistidos,
           totalElements: assistidos.length,
-          totalPages: 1,
-          number: 0,
-          size: assistidos.length,
-          first: true,
-          last: true
+          totalPages: Math.ceil(assistidos.length / size),
+          number: page,
+          size: size,
+          first: page === 0,
+          last: page >= Math.ceil(assistidos.length / size) - 1
         };
       })
     );
+  }
+
+  private aplicarFiltros(assistidos: Assistido[], filtro: AssistidoFiltro): Assistido[] {
+    const termoBusca = filtro.nome?.toLowerCase().trim() || '';
+
+    if (!termoBusca) {
+      return assistidos; // Se não há termo de busca, retorna todos os assistidos
+    }
+
+    return assistidos.filter(assistido => {
+      const nomeCompleto = assistido.nome || `${assistido.pessoa?.nome || ''} ${assistido.pessoa?.segundoNome || ''}`.trim();
+      const cpfAssistido = (assistido.cpf || assistido.pessoa?.cpf || '').replace(/\D/g, '');
+      const numProcesso = assistido.numeroProcesso || '';
+      
+      const encontrouNoNome = nomeCompleto.toLowerCase().includes(termoBusca);
+      const encontrouNoCpf = cpfAssistido.includes(termoBusca.replace(/\D/g, ''));
+      const encontrouNoProcesso = numProcesso.toLowerCase().includes(termoBusca);
+      
+      return encontrouNoNome || encontrouNoCpf || encontrouNoProcesso;
+    });
   }
 
   buscarPorId(id: number): Observable<Assistido> {
@@ -89,15 +121,78 @@ export class AssistidoService {
     );
   }
 
-  atualizar(id: number, assistido: Assistido): Observable<Assistido> {
-    const backendAssistido = this.mapper.mapAssistidoToBackend(assistido);
-    return this.http.put<any>(`${this.API_URL}/update/${id}`, backendAssistido).pipe(
-      map(backendResponse => this.mapper.mapAssistidoFromBackend(backendResponse))
+  atualizar(id: number, assistido: any): Observable<Assistido> {
+    const updateRequest = {
+      numAuto: assistido.numAuto || '',
+      numProcesso: assistido.numProcesso || '',
+      observacao: assistido.observacao || '',
+      pessoa: {
+        idPessoa: assistido.pessoa?.idPessoa,
+        nome: assistido.pessoa?.nome || '',
+        segundoNome: assistido.pessoa?.segundoNome || '',
+        cpf: assistido.pessoa?.cpf || '',
+        dataNascimento: assistido.pessoa?.dataNascimento || '',
+        telefone: assistido.pessoa?.telefone || '',
+        endereco: {
+          idEndereco: assistido.pessoa?.endereco?.idEndereco,
+          logradouro: assistido.pessoa?.endereco?.logradouro || '',
+          cep: assistido.pessoa?.endereco?.cep || '00000-000',
+          bairro: assistido.pessoa?.endereco?.bairro || 'A definir',
+          cidade: assistido.pessoa?.endereco?.cidade || 'A definir',
+          estado: assistido.pessoa?.endereco?.estado || 'A definir',
+          numero: assistido.pessoa?.endereco?.numero || 0
+        }
+      }
+    };
+
+    console.log('Enviando atualização para backend:', updateRequest);
+
+    return this.http.put<any>(`${this.API_URL}/update/${id}`, updateRequest).pipe(
+      map(response => {
+        console.log('Resposta da atualização do backend:', response);
+        if (response.success) {
+          return {
+            id: response.id,
+            idAssistido: response.id,
+            nome: updateRequest.pessoa.nome,
+            numProcesso: updateRequest.numProcesso,
+            observacao: updateRequest.observacao,
+            pessoa: {
+              idPessoa: updateRequest.pessoa.idPessoa || Date.now(),
+              nome: updateRequest.pessoa.nome,
+              segundoNome: updateRequest.pessoa.segundoNome,
+              cpf: updateRequest.pessoa.cpf,
+              dataNascimento: updateRequest.pessoa.dataNascimento,
+              telefone: updateRequest.pessoa.telefone,
+              endereco: {
+                idEndereco: updateRequest.pessoa.endereco.idEndereco || Date.now(),
+                logradouro: updateRequest.pessoa.endereco.logradouro,
+                cep: updateRequest.pessoa.endereco.cep,
+                bairro: updateRequest.pessoa.endereco.bairro,
+                cidade: updateRequest.pessoa.endereco.cidade,
+                estado: updateRequest.pessoa.endereco.estado,
+                numero: updateRequest.pessoa.endereco.numero
+              }
+            }
+          } as Assistido;
+        } else {
+          throw new Error(response.message || 'Erro desconhecido');
+        }
+      })
     );
   }
 
-  excluir(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.API_URL}/delete/${id}`);
+  excluir(id: number): Observable<any> {
+    return this.http.delete<any>(`${this.API_URL}/delete/${id}`).pipe(
+      map(response => {
+        console.log('Resposta da exclusão do backend:', response);
+        if (response.success) {
+          return response;
+        } else {
+          throw new Error(response.message || 'Erro ao excluir assistido');
+        }
+      })
+    );
   }
 
   buscarPorCpf(cpf: string): Observable<Assistido> {

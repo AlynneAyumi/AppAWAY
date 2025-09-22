@@ -37,10 +37,6 @@ export const routes: Routes = [
         loadComponent: () => import('./components/calendario/calendario.component').then(m => m.CalendarioComponent)
       },
       {
-        path: 'relatorios',
-        loadComponent: () => import('./components/relatorios/relatorio-list/relatorio-list.component').then(m => m.RelatorioListComponent)
-      },
-      {
         path: 'usuarios',
         loadComponent: () => import('./components/usuarios/usuario-list/usuario-list.component').then(m => m.UsuarioListComponent)
       }
