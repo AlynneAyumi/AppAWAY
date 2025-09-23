@@ -62,3 +62,12 @@ export interface LoginResponse {
   usuario: Usuario;
   expiresIn: number;
 }
+
+export interface UsuarioFiltro {
+  nome?: string;
+  email?: string;
+  perfil?: PerfilUsuario;
+  ativo?: boolean;
+  page?: number;
+  size?: number;
+}

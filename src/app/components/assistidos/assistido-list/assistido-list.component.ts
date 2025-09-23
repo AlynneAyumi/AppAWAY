@@ -258,9 +258,12 @@ export class AssistidoListComponent implements OnInit {
       flagComparecimento: this.comparecimentoForm.flagComparecimento,
       observacoes: this.comparecimentoForm.observacoes,
       assistido: {
-        idAssistido: this.assistidoSelecionado.idAssistido
+        idAssistido: this.assistidoSelecionado.idAssistido || this.assistidoSelecionado.id
       }
     };
+
+    console.log('Dados do comparecimento:', comparecimento);
+    console.log('Assistido selecionado:', this.assistidoSelecionado);
 
     this.comparecimentoService.criar(comparecimento).subscribe({
       next: (response) => {

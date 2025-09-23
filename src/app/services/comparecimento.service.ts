@@ -40,8 +40,12 @@ export class ComparecimentoService {
 
   criar(comparecimento: Comparecimento): Observable<Comparecimento> {
     const backendComparecimento = this.mapper.mapComparecimentoToBackend(comparecimento);
+    console.log('Enviando comparecimento para backend:', backendComparecimento);
     return this.http.post<any>(`${this.API_URL}/save`, backendComparecimento).pipe(
-      map(backendResponse => this.mapper.mapComparecimentoFromBackend(backendResponse))
+      map(backendResponse => {
+        console.log('Resposta do backend:', backendResponse);
+        return this.mapper.mapComparecimentoFromBackend(backendResponse);
+      })
     );
   }
 

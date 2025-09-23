@@ -4,7 +4,7 @@
       <h1>Usuários</h1>
       <p>Gerencie os usuários do sistema</p>
     </div>
-    <button class="btn btn-primary btn-new">
+    <button class="btn btn-primary btn-new" (click)="novoUsuario()">
       <i class="fas fa-plus"></i>
       Novo Usuário
     </button>
@@ -16,11 +16,13 @@
         <i class="fas fa-search"></i>
         <input
           type="text"
+          [(ngModel)]="filtro.nome"
           placeholder="Buscar por nome ou e-mail..."
+          (keyup)="onSearchInput()"
           (keyup.enter)="pesquisar()"
         />
       </div>
-      <select class="status-select">
+      <select class="status-select" [(ngModel)]="filtro.perfil">
         <option value="">Todos os Perfis</option>
         @for (perfil of perfilOptions; track perfil) {
           <option [value]="perfil">{{ getPerfilText(perfil) }}</option>
@@ -79,13 +81,13 @@
             </div>
 
             <div class="usuario-actions">
-              <button class="btn-action btn-view" title="Visualizar">
+              <button class="btn-action btn-view" title="Visualizar" (click)="visualizarUsuario(usuario)">
                 <i class="fas fa-eye"></i>
               </button>
-              <button class="btn-action btn-edit" title="Editar">
+              <button class="btn-action btn-edit" title="Editar" (click)="editarUsuario(usuario)">
                 <i class="fas fa-edit"></i>
               </button>
-              <button class="btn-action btn-delete" title="Excluir">
+              <button class="btn-action btn-delete" title="Excluir" (click)="excluirUsuario(usuario)">
                 <i class="fas fa-trash"></i>
               </button>
             </div>
@@ -93,5 +95,39 @@
         }
       }
     </div>
+
+    @if (totalPages > 1) {
+      <div class="pagination">
+        <button 
+          class="btn-pagination" 
+          [disabled]="currentPage === 0"
+          (click)="alterarPagina(currentPage - 1)"
+        >
+          <i class="fas fa-chevron-left"></i>
+          Anterior
+        </button>
+
+        <div class="pagination-numbers">
+          @for (pagina of getPaginas(); track pagina) {
+            <button 
+              class="btn-pagination-number"
+              [class.active]="pagina === currentPage"
+              (click)="alterarPagina(pagina)"
+            >
+              {{ pagina + 1 }}
+            </button>
+          }
+        </div>
+
+        <button 
+          class="btn-pagination" 
+          [disabled]="currentPage === totalPages - 1"
+          (click)="alterarPagina(currentPage + 1)"
+        >
+          Próxima
+          <i class="fas fa-chevron-right"></i>
+        </button>
+      </div>
+    }
   }
 </div>

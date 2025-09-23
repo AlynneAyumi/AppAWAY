@@ -1,0 +1,124 @@
+<div class="usuario-view-container">
+  <div class="page-header">
+    <div class="header-content">
+      <h1>Detalhes do Usuário</h1>
+      <p>Visualize as informações completas do usuário</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-secondary" (click)="voltar()">
+        <i class="fas fa-arrow-left"></i>
+        Voltar
+      </button>
+      <button class="btn btn-primary" (click)="editar()">
+        <i class="fas fa-edit"></i>
+        Editar
+      </button>
+    </div>
+  </div>
+
+  @if (loading) {
+    <div class="loading-container">
+      <div class="spinner"></div>
+      <p>Carregando usuário...</p>
+    </div>
+  } @else if (usuario) {
+    <div class="usuario-details">
+      <!-- Dados do Usuário -->
+      <div class="detail-section">
+        <h3><i class="fas fa-user"></i> Dados do Usuário</h3>
+        <div class="detail-grid">
+          <div class="detail-item">
+            <label>Nome Completo:</label>
+            <span>{{ usuario.nome }}</span>
+          </div>
+          <div class="detail-item">
+            <label>Nome de Usuário:</label>
+            <span>{{ usuario.nomeUser }}</span>
+          </div>
+          <div class="detail-item">
+            <label>E-mail:</label>
+            <span>{{ usuario.email }}</span>
+          </div>
+          <div class="detail-item">
+            <label>Perfil:</label>
+            <span class="perfil-badge" [class]="'perfil-' + usuario.perfil.toLowerCase()">
+              {{ getPerfilText(usuario.perfil) }}
+            </span>
+          </div>
+          <div class="detail-item">
+            <label>Status:</label>
+            <span class="status-badge" [class.active]="usuario.ativo">
+              {{ usuario.ativo ? 'Ativo' : 'Inativo' }}
+            </span>
+          </div>
+          <div class="detail-item">
+            <label>Data de Criação:</label>
+            <span>{{ formatarData(usuario.dataCriacao) }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dados Pessoais -->
+      <div class="detail-section">
+        <h3><i class="fas fa-id-card"></i> Dados Pessoais</h3>
+        <div class="detail-grid">
+          <div class="detail-item">
+            <label>CPF:</label>
+            <span>{{ formatarCpf(usuario.pessoa?.cpf) }}</span>
+          </div>
+          <div class="detail-item">
+            <label>Telefone:</label>
+            <span>{{ formatarTelefone(usuario.pessoa?.telefone) }}</span>
+          </div>
+          <div class="detail-item">
+            <label>Data de Nascimento:</label>
+            <span>{{ formatarData(usuario.pessoa?.dataNascimento) }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Endereço -->
+      @if (usuario.pessoa?.endereco) {
+        <div class="detail-section">
+          <h3><i class="fas fa-map-marker-alt"></i> Endereço</h3>
+          <div class="detail-grid">
+            <div class="detail-item">
+              <label>CEP:</label>
+              <span>{{ formatarCep(usuario.pessoa?.endereco?.cep) }}</span>
+            </div>
+            <div class="detail-item">
+              <label>Logradouro:</label>
+              <span>{{ usuario.pessoa?.endereco?.logradouro || 'Não informado' }}</span>
+            </div>
+            <div class="detail-item">
+              <label>Número:</label>
+              <span>{{ usuario.pessoa?.endereco?.numero || 'Não informado' }}</span>
+            </div>
+            <div class="detail-item">
+              <label>Bairro:</label>
+              <span>{{ usuario.pessoa?.endereco?.bairro || 'Não informado' }}</span>
+            </div>
+            <div class="detail-item">
+              <label>Cidade:</label>
+              <span>{{ usuario.pessoa?.endereco?.cidade || 'Não informado' }}</span>
+            </div>
+            <div class="detail-item">
+              <label>Estado:</label>
+              <span>{{ usuario.pessoa?.endereco?.estado || 'Não informado' }}</span>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  } @else {
+    <div class="empty-state">
+      <i class="fas fa-user-slash"></i>
+      <h3>Usuário não encontrado</h3>
+      <p>O usuário solicitado não foi encontrado ou não existe.</p>
+      <button class="btn btn-primary" (click)="voltar()">
+        <i class="fas fa-arrow-left"></i>
+        Voltar para Lista
+      </button>
+    </div>
+  }
+</div>

@@ -13,6 +13,7 @@ export class MapperService {
   mapAssistidoFromBackend(backendAssistido: any): Assistido {
     return {
       id: backendAssistido.id || backendAssistido.idAssistido,
+      idAssistido: backendAssistido.idAssistido,
       nome: backendAssistido.nome || (backendAssistido.pessoa ? `${backendAssistido.pessoa.nome} ${backendAssistido.pessoa.segundoNome}`.trim() : 'Nome não disponível'),
       cpf: backendAssistido.cpf || (backendAssistido.pessoa ? backendAssistido.pessoa.cpf : ''),
       numeroProcesso: backendAssistido.numeroProcesso || backendAssistido.numProcesso || '',
@@ -63,7 +64,7 @@ export class MapperService {
       idComparecimento: backendComparecimento.idComparecimento,
       data: new Date(backendComparecimento.data),
       flagComparecimento: backendComparecimento.flagComparecimento,
-      observacoes: backendComparecimento.observacoes,
+      observacoes: backendComparecimento.observacoes || '',
       createdBy: backendComparecimento.createdBy,
       creationDate: backendComparecimento.creationDate ? new Date(backendComparecimento.creationDate) : undefined,
       lastUpdatedBy: backendComparecimento.lastUpdatedBy,
