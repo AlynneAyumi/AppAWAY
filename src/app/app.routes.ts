@@ -39,6 +39,18 @@ export const routes: Routes = [
       {
         path: 'usuarios',
         loadComponent: () => import('./components/usuarios/usuario-list/usuario-list.component').then(m => m.UsuarioListComponent)
+      },
+      {
+        path: 'usuarios/novo',
+        loadComponent: () => import('./components/usuarios/usuario-form/usuario-form.component').then(m => m.UsuarioFormComponent)
+      },
+      {
+        path: 'usuarios/editar/:id',
+        loadComponent: () => import('./components/usuarios/usuario-form/usuario-form.component').then(m => m.UsuarioFormComponent)
+      },
+      {
+        path: 'usuarios/visualizar/:id',
+        loadComponent: () => import('./components/usuarios/usuario-view/usuario-view.component').then(m => m.UsuarioViewComponent)
       }
     ]
   },

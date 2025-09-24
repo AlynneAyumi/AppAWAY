@@ -30,6 +30,7 @@ export interface Pessoa {
   segundoNome: string;
   dataNascimento?: Date;
   telefone: string;
+  email?: string;
   createdBy?: number;
   creationDate?: Date;
   lastUpdatedBy?: number;

@@ -21,6 +21,13 @@
         <!-- Dados do Usuário -->
         <div class="form-section">
           <h3><i class="fas fa-user"></i> Dados do Usuário</h3>
+          
+          <!-- Alerta importante sobre campos obrigatórios -->
+          <div class="alert alert-warning" role="alert">
+            <i class="fas fa-exclamation-triangle"></i>
+            <strong>Atenção:</strong> Todos os campos marcados com * são obrigatórios.
+          </div>
+          
           <div class="form-row">
             <div class="form-group">
               <label for="nome">Nome Completo *</label>
@@ -35,6 +42,21 @@
               />
             </div>
             <div class="form-group">
+              <label for="segundoNome">Segundo Nome *</label>
+              <input
+                type="text"
+                id="segundoNome"
+                [(ngModel)]="usuario.pessoa!.segundoNome"
+                name="segundoNome"
+                class="form-control"
+                placeholder="Digite o segundo nome"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
               <label for="nomeUser">Nome de Usuário *</label>
               <input
                 type="text"
@@ -46,9 +68,6 @@
                 required
               />
             </div>
-          </div>
-
-          <div class="form-row">
             <div class="form-group">
               <label for="email">E-mail *</label>
               <input
@@ -61,6 +80,9 @@
                 required
               />
             </div>
+          </div>
+
+          <div class="form-row">
             <div class="form-group">
               <label for="senha">Senha {{ isEdit ? '(deixe em branco para manter a atual)' : '*' }}</label>
               <input
@@ -143,6 +165,20 @@
                 [(ngModel)]="usuario.pessoa!.dataNascimento"
                 name="dataNascimento"
                 class="form-control"
+              />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="emailPessoa">E-mail da Pessoa</label>
+              <input
+                type="email"
+                id="emailPessoa"
+                [(ngModel)]="usuario.pessoa!.email"
+                name="emailPessoa"
+                class="form-control"
+                placeholder="Digite o e-mail da pessoa"
               />
             </div>
           </div>

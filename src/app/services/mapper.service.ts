@@ -77,12 +77,13 @@ export class MapperService {
   mapUsuarioFromBackend(backendUsuario: any): Usuario {
     return {
       id: backendUsuario.id || backendUsuario.idUsuario,
+      idUsuario: backendUsuario.idUsuario,
       nome: backendUsuario.nome || (backendUsuario.pessoa ? `${backendUsuario.pessoa.nome} ${backendUsuario.pessoa.segundoNome}`.trim() : backendUsuario.nomeUser || 'Nome não disponível'),
       nomeUser: backendUsuario.nomeUser || '',
       email: backendUsuario.email || '',
       senha: backendUsuario.senha,
       perfil: backendUsuario.perfil || 'AGENTE',
-      ativo: backendUsuario.ativo !== undefined ? backendUsuario.ativo : true,
+      ativo: backendUsuario.ativo !== undefined && backendUsuario.ativo !== null ? backendUsuario.ativo : true,
       tipoAcesso: backendUsuario.tipoAcesso,
       dataCriacao: backendUsuario.dataCriacao ? new Date(backendUsuario.dataCriacao) : (backendUsuario.creationDate ? new Date(backendUsuario.creationDate) : undefined),
       dataUltimaAtualizacao: backendUsuario.dataUltimaAtualizacao ? new Date(backendUsuario.dataUltimaAtualizacao) : (backendUsuario.lastUpdateDate ? new Date(backendUsuario.lastUpdateDate) : undefined),
@@ -97,17 +98,36 @@ export class MapperService {
   // Mapear Pessoa do backend
   mapPessoaFromBackend(backendPessoa: any): Pessoa {
     return {
-      idPessoa: backendPessoa.id,
+      idPessoa: backendPessoa.id || backendPessoa.idPessoa,
       nome: backendPessoa.nome || '',
       segundoNome: backendPessoa.segundoNome || '',
       cpf: backendPessoa.cpf || '',
       dataNascimento: backendPessoa.dataNascimento ? new Date(backendPessoa.dataNascimento) : undefined,
       telefone: backendPessoa.telefone || '',
+      email: backendPessoa.email || '',
       createdBy: backendPessoa.createdBy,
       creationDate: backendPessoa.creationDate ? new Date(backendPessoa.creationDate) : undefined,
       lastUpdatedBy: backendPessoa.lastUpdatedBy,
       lastUpdateDate: backendPessoa.lastUpdateDate ? new Date(backendPessoa.lastUpdateDate) : undefined,
-      endereco: backendPessoa.endereco
+      endereco: backendPessoa.endereco ? this.mapEnderecoFromBackend(backendPessoa.endereco) : undefined
+    };
+  }
+
+  // Mapear Endereco do backend
+  mapEnderecoFromBackend(backendEndereco: any): any {
+    return {
+      idEndereco: backendEndereco.id || backendEndereco.idEndereco,
+      logradouro: backendEndereco.logradouro || backendEndereco.rua || '',
+      numero: backendEndereco.numero || '',
+      complemento: backendEndereco.complemento || '',
+      bairro: backendEndereco.bairro || '',
+      cidade: backendEndereco.cidade || '',
+      estado: backendEndereco.estado || '',
+      cep: backendEndereco.cep || '',
+      createdBy: backendEndereco.createdBy,
+      creationDate: backendEndereco.creationDate ? new Date(backendEndereco.creationDate) : undefined,
+      lastUpdatedBy: backendEndereco.lastUpdatedBy,
+      lastUpdateDate: backendEndereco.lastUpdateDate ? new Date(backendEndereco.lastUpdateDate) : undefined
     };
   }
 
@@ -203,16 +223,37 @@ export class MapperService {
   mapPessoaToBackend(pessoa: Pessoa): any {
     return {
       id: pessoa.idPessoa,
+      idPessoa: pessoa.idPessoa,
       nome: pessoa.nome,
       segundoNome: pessoa.segundoNome,
       cpf: pessoa.cpf,
       dataNascimento: pessoa.dataNascimento,
       telefone: pessoa.telefone,
+      email: pessoa.email,
       createdBy: pessoa.createdBy,
       creationDate: pessoa.creationDate,
       lastUpdatedBy: pessoa.lastUpdatedBy,
       lastUpdateDate: pessoa.lastUpdateDate,
-      endereco: pessoa.endereco
+      endereco: pessoa.endereco ? this.mapEnderecoToBackend(pessoa.endereco) : undefined
+    };
+  }
+
+  // Mapear Endereco para o backend
+  mapEnderecoToBackend(endereco: any): any {
+    return {
+      id: endereco.idEndereco,
+      idEndereco: endereco.idEndereco,
+      logradouro: endereco.logradouro,
+      numero: endereco.numero,
+      complemento: endereco.complemento,
+      bairro: endereco.bairro,
+      cidade: endereco.cidade,
+      estado: endereco.estado,
+      cep: endereco.cep,
+      createdBy: endereco.createdBy,
+      creationDate: endereco.creationDate,
+      lastUpdatedBy: endereco.lastUpdatedBy,
+      lastUpdateDate: endereco.lastUpdateDate
     };
   }
 

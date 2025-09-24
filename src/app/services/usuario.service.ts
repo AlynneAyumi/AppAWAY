@@ -60,7 +60,9 @@ export class UsuarioService {
   criar(usuario: Usuario): Observable<Usuario> {
     const backendUsuario = this.mapper.mapUsuarioToBackend(usuario);
     console.log('Enviando usuário para backend:', backendUsuario);
-    return this.http.post<any>(`${this.API_URL}/save`, backendUsuario).pipe(
+    return this.http.post<any>(`${this.API_URL}/save`, backendUsuario, {
+      headers: { 'Content-Type': 'application/json' }
+    }).pipe(
       map(backendResponse => {
         console.log('Resposta do backend:', backendResponse);
         return this.mapper.mapUsuarioFromBackend(backendResponse);
@@ -70,7 +72,9 @@ export class UsuarioService {
 
   atualizar(id: number, usuario: Usuario): Observable<Usuario> {
     const backendUsuario = this.mapper.mapUsuarioToBackend(usuario);
-    return this.http.put<any>(`${this.API_URL}/update/${id}`, backendUsuario).pipe(
+    return this.http.put<any>(`${this.API_URL}/update/${id}`, backendUsuario, {
+      headers: { 'Content-Type': 'application/json' }
+    }).pipe(
       map(backendResponse => this.mapper.mapUsuarioFromBackend(backendResponse))
     );
   }

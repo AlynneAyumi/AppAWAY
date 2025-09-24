@@ -212,6 +212,16 @@ export class UsuarioFormComponent implements OnInit {
       return false;
     }
 
+    if (!this.usuario.pessoa?.segundoNome?.trim()) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Segundo nome obrigatório',
+        text: 'Por favor, informe o segundo nome do usuário.',
+        confirmButtonText: 'OK'
+      });
+      return false;
+    }
+
     return true;
   }
 

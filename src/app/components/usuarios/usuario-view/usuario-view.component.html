@@ -74,6 +74,10 @@
             <label>Data de Nascimento:</label>
             <span>{{ formatarData(usuario.pessoa?.dataNascimento) }}</span>
           </div>
+          <div class="detail-item">
+            <label>E-mail da Pessoa:</label>
+            <span>{{ usuario.pessoa?.email || 'Não informado' }}</span>
+          </div>
         </div>
       </div>
 

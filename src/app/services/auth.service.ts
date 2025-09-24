@@ -16,6 +16,28 @@ export class AuthService {
 
   constructor(private http: HttpClient, private mapper: MapperService) {
     this.loadUserFromStorage();
+    // TEMPORÁRIO: Criar usuário mockado para teste
+    if (!this.isAuthenticated()) {
+      this.createMockUser();
+    }
+  }
+
+  private createMockUser(): void {
+    const mockUser: Usuario = {
+      id: 1,
+      nome: 'Admin',
+      nomeUser: 'admin',
+      email: 'admin@patronato.com',
+      perfil: 'ADMINISTRADOR' as PerfilUsuario,
+      ativo: true,
+      dataCriacao: new Date(),
+      dataUltimaAtualizacao: new Date()
+    };
+    
+    localStorage.setItem(environment.auth.tokenStorageKey, 'mock-token-12345');
+    localStorage.setItem(environment.auth.userStorageKey, JSON.stringify(mockUser));
+    this.currentUserSubject.next(mockUser);
+    console.log('Usuário mockado criado para teste');
   }
 
   login(loginRequest: LoginRequest): Observable<LoginResponse> {

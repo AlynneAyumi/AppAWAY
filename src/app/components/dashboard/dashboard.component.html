@@ -1,7 +1,15 @@
 <div class="dashboard-container">
   <div class="dashboard-header">
-    <h1>Dashboard</h1>
-    <p>Visão geral do sistema de gestão do patronato</p>
+    <div class="header-content">
+      <div class="header-text">
+        <h1>Dashboard</h1>
+        <p>Visão geral do sistema de gestão do patronato</p>
+      </div>
+      <button class="btn btn-outline-primary btn-sm refresh-btn" (click)="carregarEstatisticas()" [disabled]="loading">
+        <i class="fas fa-sync-alt" [class.fa-spin]="loading"></i>
+        {{ loading ? 'Carregando...' : 'Recarregar Dados' }}
+      </button>
+    </div>
   </div>
 
   @if (loading) {
@@ -57,75 +65,75 @@
         <div class="content-card">
           <div class="card-header">
             <h3>Atividades Recentes</h3>
-            <button class="btn btn-outline-primary btn-sm">Ver Todas</button>
+            @if (atividadesRecentes.length > 0) {
+              <button class="btn btn-outline-primary btn-sm expand-btn" (click)="alternarAtividades()">
+                <i class="fas" [class.fa-chevron-down]="!atividadesExpandidas" [class.fa-chevron-up]="atividadesExpandidas"></i>
+                {{ atividadesExpandidas ? 'Ver Menos' : 'Ver Todas' }}
+              </button>
+            }
           </div>
           <div class="card-content">
-            <div class="activity-item">
-              <div class="activity-icon">
-                <i class="fas fa-user-plus"></i>
+            @if (atividadesRecentes.length > 0) {
+              @for (atividade of getAtividadesVisiveis(); track atividade.id) {
+                <div class="activity-item">
+                  <div class="activity-icon">
+                    @if (atividade.tipo === 'cadastro') {
+                      <i class="fas fa-user-plus"></i>
+                    } @else if (atividade.tipo === 'comparecimento') {
+                      <i class="fas fa-calendar-check"></i>
+                    } @else {
+                      <i class="fas fa-times-circle"></i>
+                    }
+                  </div>
+                  <div class="activity-text">
+                    <p>{{ atividade.descricao }}</p>
+                    @if (atividade.assistido) {
+                      <p class="assistido-nome">{{ atividade.assistido }}</p>
+                    }
+                    <span>{{ formatarTempoRelativo(atividade.data) }}</span>
+                  </div>
+                </div>
+              }
+            } @else {
+              <div class="no-data">
+                <p>Nenhuma atividade recente encontrada</p>
               </div>
-              <div class="activity-text">
-                <p>Novo assistido cadastrado</p>
-                <span>Há 2 horas</span>
-              </div>
-            </div>
-            <div class="activity-item">
-              <div class="activity-icon">
-                <i class="fas fa-calendar-check"></i>
-              </div>
-              <div class="activity-text">
-                <p>Comparecimento confirmado</p>
-                <span>Há 4 horas</span>
-              </div>
-            </div>
-            <div class="activity-item">
-              <div class="activity-icon">
-                <i class="fas fa-times-circle"></i>
-              </div>
-              <div class="activity-text">
-                <p>Falta registrada</p>
-                <span>Ontem</span>
-              </div>
-            </div>
+            }
           </div>
         </div>
 
         <div class="content-card">
           <div class="card-header">
             <h3>Próximos Comparecimentos</h3>
-            <button class="btn btn-outline-primary btn-sm">Ver Todos</button>
+            @if (proximosComparecimentos.length > 0) {
+              <button class="btn btn-outline-primary btn-sm expand-btn" (click)="alternarComparecimentos()">
+                <i class="fas" [class.fa-chevron-down]="!comparecimentosExpandidos" [class.fa-chevron-up]="comparecimentosExpandidos"></i>
+                {{ comparecimentosExpandidos ? 'Ver Menos' : 'Ver Todos' }}
+              </button>
+            }
           </div>
           <div class="card-content">
-            <div class="appointment-item">
-              <div class="appointment-time">
-                <span class="time">09:00</span>
-                <span class="date">Hoje</span>
+            @if (proximosComparecimentos.length > 0) {
+              @for (comparecimento of getComparecimentosVisiveis(); track comparecimento.id) {
+                <div class="appointment-item">
+                  <div class="appointment-time">
+                    <span class="time">{{ comparecimento.horario }}</span>
+                    <span class="date">{{ comparecimento.data }}</span>
+                  </div>
+                  <div class="appointment-details">
+                    <p>{{ comparecimento.assistido }}</p>
+                    <span class="status" [class.confirmed]="comparecimento.status === 'compareceu'" 
+                          [class.pending]="comparecimento.status === 'pendente'">
+                      {{ comparecimento.status === 'compareceu' ? 'Compareceu' : 'Pendente' }}
+                    </span>
+                  </div>
+                </div>
+              }
+            } @else {
+              <div class="no-data">
+                <p>Nenhum comparecimento agendado</p>
               </div>
-              <div class="appointment-details">
-                <p>João Silva Santos</p>
-                <span class="status confirmed">Compareceu</span>
-              </div>
-            </div>
-            <div class="appointment-item">
-              <div class="appointment-time">
-                <span class="time">14:30</span>
-                <span class="date">Hoje</span>
-              </div>
-              <div class="appointment-details">
-                <p>Maria Santos Costa</p>
-                <span class="status pending">Pendente</span>
-              </div>
-            </div>
-            <div class="appointment-item">
-              <div class="appointment-time">
-                <span class="time">10:00</span>
-                <span class="date">Amanhã</span>
-              </div>
-              <div class="appointment-details">
-                <p>Pedro Costa Lima</p>
-                <span class="status pending">Pendente</span>
-              </div>
-            </div>
+            }
           </div>
         </div>
       </div>
