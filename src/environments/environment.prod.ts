@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://seu-backend-url.com', // Substitua pela URL do seu backend em produção
+  apiUrl: 'http://98.83.35.183:8080',
   auth: {
     tokenPrefix: 'Bearer ',
     tokenStorageKey: 'token',

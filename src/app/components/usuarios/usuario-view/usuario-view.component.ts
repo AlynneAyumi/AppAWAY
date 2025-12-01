@@ -97,3 +97,4 @@ export class UsuarioViewComponent implements OnInit {
     return telefone;
   }
 }
+

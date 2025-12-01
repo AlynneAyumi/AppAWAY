@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Assistido, PessoaAssistido, Comparecimento } from '../models/assistido.model';
-import { Usuario, Pessoa } from '../models/usuario.model';
+import { Usuario, Pessoa, PerfilUsuario } from '../models/usuario.model';
 
 @Injectable({
   providedIn: 'root'
@@ -82,7 +82,7 @@ export class MapperService {
       nomeUser: backendUsuario.nomeUser || '',
       email: backendUsuario.email || '',
       senha: backendUsuario.senha,
-      perfil: backendUsuario.perfil || 'AGENTE',
+      perfil: this.mapRoleToPerfil(backendUsuario.perfil || backendUsuario.role || 'AGENTE'),
       ativo: backendUsuario.ativo !== undefined && backendUsuario.ativo !== null ? backendUsuario.ativo : true,
       tipoAcesso: backendUsuario.tipoAcesso,
       dataCriacao: backendUsuario.dataCriacao ? new Date(backendUsuario.dataCriacao) : (backendUsuario.creationDate ? new Date(backendUsuario.creationDate) : undefined),
@@ -258,6 +258,18 @@ export class MapperService {
   }
 
   // Métodos auxiliares
+  private mapRoleToPerfil(role: string): PerfilUsuario {
+    if (!role) return 'AGENTE' as PerfilUsuario;
+    const roleUpper = role.toUpperCase();
+    if (roleUpper.includes('ADMIN') || roleUpper === 'ADMINISTRADOR') {
+      return 'ADMINISTRADOR' as PerfilUsuario;
+    }
+    if (roleUpper.includes('SUPER') || roleUpper === 'SUPERVISOR') {
+      return 'SUPERVISOR' as PerfilUsuario;
+    }
+    return 'AGENTE' as PerfilUsuario;
+  }
+
   private formatarNomeCompleto(assistido: Assistido): string {
     if (assistido.pessoa) {
       return `${assistido.pessoa.nome} ${assistido.pessoa.segundoNome}`.trim();
