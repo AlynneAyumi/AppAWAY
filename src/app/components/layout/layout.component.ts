@@ -27,6 +27,20 @@ export class LayoutComponent implements OnInit {
     });
   }
 
+  isAdmin(): boolean {
+    if (!this.currentUser) return false;
+    return this.currentUser.perfil === 'ADMIN';
+  }
+
+  getPerfilText(perfil?: string): string {
+    if (!perfil) return 'Funcionário';
+    switch (perfil) {
+      case 'ADMIN': return 'Administrador';
+      case 'FUNCIONARIO': return 'Funcionário';
+      default: return 'Funcionário';
+    }
+  }
+
   toggleSidebar(): void {
     this.sidebarOpen = !this.sidebarOpen;
   }

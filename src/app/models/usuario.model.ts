@@ -18,9 +18,8 @@ export interface Usuario {
 }
 
 export enum PerfilUsuario {
-  ADMINISTRADOR = 'ADMINISTRADOR',
-  SUPERVISOR = 'SUPERVISOR',
-  AGENTE = 'AGENTE'
+  ADMIN = 'ADMIN',
+  FUNCIONARIO = 'FUNCIONARIO'
 }
 
 export interface Pessoa {

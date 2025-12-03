@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './guards/auth.guard';
+import { adminGuard } from './guards/admin.guard';
 
 export const routes: Routes = [
   {
@@ -38,19 +39,23 @@ export const routes: Routes = [
       },
       {
         path: 'usuarios',
-        loadComponent: () => import('./components/usuarios/usuario-list/usuario-list.component').then(m => m.UsuarioListComponent)
+        loadComponent: () => import('./components/usuarios/usuario-list/usuario-list.component').then(m => m.UsuarioListComponent),
+        canActivate: [adminGuard]
       },
       {
         path: 'usuarios/novo',
-        loadComponent: () => import('./components/usuarios/usuario-form/usuario-form.component').then(m => m.UsuarioFormComponent)
+        loadComponent: () => import('./components/usuarios/usuario-form/usuario-form.component').then(m => m.UsuarioFormComponent),
+        canActivate: [adminGuard]
       },
       {
         path: 'usuarios/editar/:id',
-        loadComponent: () => import('./components/usuarios/usuario-form/usuario-form.component').then(m => m.UsuarioFormComponent)
+        loadComponent: () => import('./components/usuarios/usuario-form/usuario-form.component').then(m => m.UsuarioFormComponent),
+        canActivate: [adminGuard]
       },
       {
         path: 'usuarios/visualizar/:id',
-        loadComponent: () => import('./components/usuarios/usuario-view/usuario-view.component').then(m => m.UsuarioViewComponent)
+        loadComponent: () => import('./components/usuarios/usuario-view/usuario-view.component').then(m => m.UsuarioViewComponent),
+        canActivate: [adminGuard]
       }
     ]
   },

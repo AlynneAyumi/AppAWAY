@@ -46,13 +46,6 @@ export class AssistidoFormComponent implements OnInit {
       }
     });
 
-    // Debug: monitorar mudanças no formulário
-    this.assistidoForm.statusChanges.subscribe(status => {
-      console.log('Status do formulário:', status);
-      if (status === 'INVALID') {
-        console.log('Formulário inválido. Erros:', this.getFormErrors());
-      }
-    });
   }
 
   carregarAssistido(): void {
@@ -61,8 +54,6 @@ export class AssistidoFormComponent implements OnInit {
     this.loading = true;
     this.assistidoService.buscarPorId(this.assistidoId).subscribe({
       next: (assistido) => {
-        console.log('Dados carregados do assistido:', assistido);
-        
         // Formatar CPF se existir
         let cpfFormatado = '';
         if (assistido.pessoa?.cpf) {
@@ -113,19 +104,6 @@ export class AssistidoFormComponent implements OnInit {
   }
 
   onSubmit(): void {
-    // Debug: verificar estado do formulário
-    console.log('Formulário válido:', this.assistidoForm.valid);
-    console.log('Erros do formulário:', this.assistidoForm.errors);
-    console.log('Valores do formulário:', this.assistidoForm.value);
-    
-    // Verificar erros em cada campo
-    Object.keys(this.assistidoForm.controls).forEach(key => {
-      const control = this.assistidoForm.get(key);
-      if (control && control.errors) {
-        console.log(`Erro no campo ${key}:`, control.errors);
-      }
-    });
-
     if (this.assistidoForm.valid) {
       this.loading = true;
       const formValue = this.assistidoForm.value;

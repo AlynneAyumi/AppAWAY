@@ -146,17 +146,12 @@
               font-weight: 600;
               text-transform: uppercase;
 
-              &.perfil-administrador {
+              &.perfil-admin {
                 background-color: #dc3545;
                 color: white;
               }
 
-              &.perfil-supervisor {
-                background-color: #ffc107;
-                color: #212529;
-              }
-
-              &.perfil-agente {
+              &.perfil-funcionario {
                 background-color: #28a745;
                 color: white;
               }

@@ -56,9 +56,7 @@ export class CalendarioComponent implements OnInit {
       size: 1000
     }).subscribe({
       next: (response) => {
-        console.log('Comparecimentos carregados:', response);
         this.comparecimentos = response.content || [];
-        console.log('Comparecimentos processados:', this.comparecimentos);
         this.gerarCalendario();
         this.loading = false;
       },
@@ -169,9 +167,6 @@ export class CalendarioComponent implements OnInit {
 
 
   abrirDetalhes(comparecimento: Comparecimento): void {
-    console.log('Abrindo detalhes do comparecimento:', comparecimento);
-    console.log('Dados do assistido:', comparecimento.assistido);
-    console.log('Dados da pessoa:', comparecimento.assistido?.pessoa);
     this.comparecimentoSelecionado = comparecimento;
   }
 

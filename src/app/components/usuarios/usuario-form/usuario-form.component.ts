@@ -19,7 +19,7 @@ export class UsuarioFormComponent implements OnInit {
     nomeUser: '',
     email: '',
     senha: '',
-    perfil: PerfilUsuario.AGENTE,
+    perfil: PerfilUsuario.FUNCIONARIO,
     ativo: true,
     pessoa: {
       cpf: '',
@@ -231,9 +231,8 @@ export class UsuarioFormComponent implements OnInit {
 
   getPerfilText(perfil: PerfilUsuario): string {
     switch (perfil) {
-      case PerfilUsuario.ADMINISTRADOR: return 'Administrador';
-      case PerfilUsuario.SUPERVISOR: return 'Supervisor';
-      case PerfilUsuario.AGENTE: return 'Agente';
+      case PerfilUsuario.ADMIN: return 'Administrador';
+      case PerfilUsuario.FUNCIONARIO: return 'Funcionário';
       default: return perfil;
     }
   }

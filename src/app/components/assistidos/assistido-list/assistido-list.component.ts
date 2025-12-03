@@ -262,9 +262,6 @@ export class AssistidoListComponent implements OnInit {
       }
     };
 
-    console.log('Dados do comparecimento:', comparecimento);
-    console.log('Assistido selecionado:', this.assistidoSelecionado);
-
     this.comparecimentoService.criar(comparecimento).subscribe({
       next: (response) => {
         this.salvandoComparecimento = false;

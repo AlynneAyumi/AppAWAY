@@ -82,7 +82,7 @@ export class MapperService {
       nomeUser: backendUsuario.nomeUser || '',
       email: backendUsuario.email || '',
       senha: backendUsuario.senha,
-      perfil: this.mapRoleToPerfil(backendUsuario.perfil || backendUsuario.role || 'AGENTE'),
+      perfil: this.mapRoleToPerfil(backendUsuario.perfil || backendUsuario.role || 'FUNCIONARIO'),
       ativo: backendUsuario.ativo !== undefined && backendUsuario.ativo !== null ? backendUsuario.ativo : true,
       tipoAcesso: backendUsuario.tipoAcesso,
       dataCriacao: backendUsuario.dataCriacao ? new Date(backendUsuario.dataCriacao) : (backendUsuario.creationDate ? new Date(backendUsuario.creationDate) : undefined),
@@ -206,6 +206,7 @@ export class MapperService {
       nomeUser: usuario.nomeUser,
       email: usuario.email,
       senha: usuario.senha,
+      role: usuario.perfil, // Backend usa 'role', frontend usa 'perfil'
       perfil: usuario.perfil,
       ativo: usuario.ativo,
       tipoAcesso: usuario.tipoAcesso,
@@ -259,15 +260,14 @@ export class MapperService {
 
   // Métodos auxiliares
   private mapRoleToPerfil(role: string): PerfilUsuario {
-    if (!role) return 'AGENTE' as PerfilUsuario;
-    const roleUpper = role.toUpperCase();
-    if (roleUpper.includes('ADMIN') || roleUpper === 'ADMINISTRADOR') {
-      return 'ADMINISTRADOR' as PerfilUsuario;
+    if (!role) return 'FUNCIONARIO' as PerfilUsuario;
+    const roleUpper = role.toUpperCase().trim();
+    // Verifica se é ADMIN (pode vir como 'ADMIN', 'ADMINISTRADOR', 'ROLE_ADMIN', etc.)
+    if (roleUpper === 'ADMIN' || roleUpper === 'ADMINISTRADOR' || roleUpper.includes('ADMIN')) {
+      return 'ADMIN' as PerfilUsuario;
     }
-    if (roleUpper.includes('SUPER') || roleUpper === 'SUPERVISOR') {
-      return 'SUPERVISOR' as PerfilUsuario;
-    }
-    return 'AGENTE' as PerfilUsuario;
+    // Qualquer outro role (FUNCIONARIO, AGENTE, etc.) mapeia para FUNCIONARIO
+    return 'FUNCIONARIO' as PerfilUsuario;
   }
 
   private formatarNomeCompleto(assistido: Assistido): string {

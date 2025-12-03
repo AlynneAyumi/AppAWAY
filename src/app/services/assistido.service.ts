@@ -88,11 +88,8 @@ export class AssistidoService {
       }
     };
     
-    console.log('Enviando para backend:', createRequest);
-    
     return this.http.post<any>(`${this.API_URL}/save`, createRequest).pipe(
       map(response => {
-        console.log('Resposta do backend:', response);
         // O backend agora retorna JSON estruturado
         if (response.success) {
           return {
@@ -145,11 +142,8 @@ export class AssistidoService {
       }
     };
 
-    console.log('Enviando atualização para backend:', updateRequest);
-
     return this.http.put<any>(`${this.API_URL}/update/${id}`, updateRequest).pipe(
       map(response => {
-        console.log('Resposta da atualização do backend:', response);
         if (response.success) {
           return {
             id: response.id,
@@ -185,7 +179,6 @@ export class AssistidoService {
   excluir(id: number): Observable<any> {
     return this.http.delete<any>(`${this.API_URL}/delete/${id}`).pipe(
       map(response => {
-        console.log('Resposta da exclusão do backend:', response);
         if (response.success) {
           return response;
         } else {
