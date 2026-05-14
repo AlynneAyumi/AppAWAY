@@ -35,6 +35,7 @@ export class LoginComponent {
 
       this.authService.login(loginRequest).subscribe({
         next: (response) => {
+          console.log(response);
           this.loading = false;
           Swal.fire({
             icon: 'success',

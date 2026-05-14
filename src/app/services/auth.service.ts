@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { tap, map } from 'rxjs/operators';
+import { tap, map, switchMap } from 'rxjs/operators';
 import { LoginRequest, LoginResponse, Usuario, PerfilUsuario } from '../models/usuario.model';
 import { MapperService } from './mapper.service';
 import { environment } from '../../environments/environment';
@@ -19,66 +19,66 @@ export class AuthService {
   }
 
   login(loginRequest: LoginRequest): Observable<LoginResponse> {
-    // Chamadas reais para o backend
     return this.http.post<any>(`${this.API_URL}/login`, loginRequest).pipe(
-      map(backendResponse => {
-        try {
-          const usuario = this.mapper.mapUsuarioFromBackend(backendResponse.usuario);
-          return {
-            token: backendResponse.token,
-            usuario: usuario,
-            expiresIn: backendResponse.expiresIn
-          };
-        } catch (error) {
-          console.error('Erro ao mapear usuário:', error);
-          throw error;
-        }
+      map(backendResponse => ({
+        token: backendResponse.token,
+        expiresIn: backendResponse.expiresIn
+      })),
+      tap(response => {
+        this.setCookie(
+          environment.auth.tokenStorageKey,
+          response.token,
+          response.expiresIn
+        );
       }),
-      tap((response: LoginResponse) => {
-        localStorage.setItem(environment.auth.tokenStorageKey, response.token);
-        localStorage.setItem(environment.auth.userStorageKey, JSON.stringify(response.usuario));
-        this.currentUserSubject.next(response.usuario);
-      })
+      switchMap(response =>
+        this.http.get<any>(`${this.API_URL}/user`, {
+          headers: {
+            Authorization: `Bearer ${response.token}`
+          }
+        }).pipe(
+          tap(user => {
+            this.setCookie(
+              environment.auth.userStorageKey,
+              JSON.stringify(user),
+              response.expiresIn
+            );
+            this.currentUserSubject.next(user);
+          }),
+          map(user => ({ ...response, usuario: user }))
+        )
+      )
     );
+  }
 
-    // MODO DESENVOLVIMENTO: Simulação temporária (descomente se necessário para testes sem backend)
-    /*
-    return new Observable(observer => {
-      setTimeout(() => {
-        const mockResponse: LoginResponse = {
-          token: 'mock-token-12345',
-          usuario: {
-            id: 1,
-            nome: 'Usuário Demo',
-            nomeUser: 'usuario.demo',
-            email: loginRequest.email,
-            perfil: 'ADMINISTRADOR' as PerfilUsuario,
-            ativo: true,
-            dataCriacao: new Date(),
-            dataUltimaAtualizacao: new Date()
-          },
-          expiresIn: 3600
-        };
-        
-        localStorage.setItem(environment.auth.tokenStorageKey, mockResponse.token);
-        localStorage.setItem(environment.auth.userStorageKey, JSON.stringify(mockResponse.usuario));
-        this.currentUserSubject.next(mockResponse.usuario);
-        
-        observer.next(mockResponse);
-        observer.complete();
-      }, 1000);
-    });
-    */
+
+  private setCookie(name: string, value: string, expiresInSeconds: number): void {
+    const expires = new Date();
+    expires.setSeconds(expires.getSeconds() + expiresInSeconds);
+
+    document.cookie = [
+      `${name}=${value}`,
+      `expires=${expires.toUTCString()}`,
+      `path=/`,
+      `SameSite=Strict`,
+      `Secure`
+    ].join('; ');
+  } 
+
+  getToken(): string | null {
+    const cookies = document.cookie.split(';');
+    const cookie = cookies.find(cookie => cookie.trim().startsWith(`${environment.auth.tokenStorageKey}=`));
+
+    return cookie 
+      ? cookie.split('=')[1].trim()
+      : null;
   }
 
   logout(): void {
-    localStorage.removeItem(environment.auth.tokenStorageKey);
-    localStorage.removeItem(environment.auth.userStorageKey);
+    const expired = 'expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+    document.cookie = `${environment.auth.tokenStorageKey}=; ${expired}`;
+    document.cookie = `${environment.auth.userStorageKey}=; ${expired}`;
     this.currentUserSubject.next(null);
-  }
-
-  getToken(): string | null {
-    return localStorage.getItem(environment.auth.tokenStorageKey);
   }
 
   isAuthenticated(): boolean {
@@ -90,9 +90,11 @@ export class AuthService {
   }
 
   private loadUserFromStorage(): void {
-    const user = localStorage.getItem(environment.auth.userStorageKey);
-    if (user) {
-      this.currentUserSubject.next(JSON.parse(user));
+    const cookies = document.cookie.split(';');
+    const cookie = cookies.find(c => c.trim().startsWith(`${environment.auth.userStorageKey}=`));
+    if (cookie) {
+      const value = cookie.split('=').slice(1).join('=').trim();
+      this.currentUserSubject.next(JSON.parse(decodeURIComponent(value)));
     }
   }
 }
